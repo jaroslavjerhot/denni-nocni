@@ -72,7 +72,11 @@ body {
 }
 
 @media (max-width: 576px) {
-  .register-card {
+  .register-card-container {
+    max-width: 100%;
+    padding: 1.25rem !important;
+  }
+.register-card {
     max-width: 100%;
     padding: 1.25rem !important;
   }
