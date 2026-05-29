@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+</head>
+<body>
+
+<h2>Dashboard</h2>
+
+<div id="userBox">Loading...</div>
+
+<button id="logoutBtn">Logout</button>
+
+<script type="module">
+import { auth } from "./firebase/config.js";
+import { callApi } from "./js/api.js";
+
+import {
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+onAuthStateChanged(auth, async user => {
+  if (!user) {
+    location.href = "index.html";
+    return;
+  }
+
+  const result = await callApi("getCurrentUser");
+
+  if (!result.ok) {
+    document.getElementById("userBox").innerText = result.error;
+    return;
+  }
+
+  document.getElementById("userBox").innerHTML = `
+    <p>Email: ${result.email}</p>
+    <p>Name: ${result.name}</p>
+    <p>Role: ${result.role}</p>
+  `;
+});
+
+document.getElementById("logoutBtn").onclick = async () => {
+  await signOut(auth);
+  location.href = "index.html";
+};
+</script>
+
+</body>
+</html>
