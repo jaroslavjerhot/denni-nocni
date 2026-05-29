@@ -52,13 +52,13 @@ window.registerUser = async function () {
         givenname: givenname.value.trim(),
         surname: surname.value.trim(),
         suffix: suffix.value.trim(),
+        shortname: shortname.value.trim(),
         phone: phone.value.trim(),
         position: position.value,
         unfavorite_1: unfavorite1.value,
         unfavorite_2: unfavorite2.value,
         unfavorite_3: unfavorite3.value,
         unfavorite_4: unfavorite4.value,
-        unfavorite_5: unfavorite5.value
       }
     });
 

@@ -26,7 +26,7 @@ window.login = async function(){
     );
 
     location.href =
-      "dashboard.html";
+      "requests.html";
 
   }catch(err){
 
@@ -65,7 +65,7 @@ window.googleLogin = async function(){
     );
 
     location.href =
-      "dashboard.html";
+      "requests.html";
 
   }catch(err){
 

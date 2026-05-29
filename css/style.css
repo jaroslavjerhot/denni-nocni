@@ -107,3 +107,55 @@ body {
         border-radius: 12px;
     }
 }
+.calendar-table {
+    background: rgba(255,255,255,.96);
+}
+
+.calendar-table th {
+    background: var(--royal-green);
+    color: white;
+    text-align: center;
+}
+
+.calendar-day {
+    min-width: 130px;
+    height: 150px;
+    vertical-align: top;
+}
+
+.day-number {
+    font-weight: 700;
+    color: var(--royal-green);
+    margin-bottom: 6px;
+}
+
+.weekend-day {
+    background: rgba(16,185,129,.12) !important;
+}
+
+.holiday-day {
+    background: rgba(212,175,55,.20) !important;
+}
+
+.empty-day {
+    background: rgba(0,0,0,.04) !important;
+}
+
+.shift-label {
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--royal-green-dark);
+}
+
+@media (max-width: 768px) {
+    .calendar-day {
+        min-width: 115px;
+        height: 145px;
+        font-size: .85rem;
+    }
+
+    .calendar-table select {
+        font-size: .8rem;
+        padding: .25rem;
+    }
+}
