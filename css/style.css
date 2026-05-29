@@ -1,53 +1,69 @@
-body{
-
-  font-family:Arial;
-  background:#f3f4f6;
-
-  display:flex;
-  justify-content:center;
-  align-items:center;
-
-  height:100vh;
+:root {
+  --royal-green: #064e3b;
+  --royal-green-dark: #022c22;
+  --royal-green-light: #10b981;
+  --gold: #d4af37;
 }
 
-.card{
+body {
+  min-height: 100vh;
+  margin: 0;
+  font-family: Arial, sans-serif;
 
-  width:320px;
+  background:
+    linear-gradient(
+      rgba(2, 44, 34, 0.78),
+      rgba(2, 44, 34, 0.88)
+    ),
+    url("../img/bg_royal_green.jpg");
 
-  background:white;
-
-  padding:30px;
-
-  border-radius:14px;
-
-  box-shadow:
-    0 4px 20px rgba(0,0,0,0.1);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
 }
 
-input{
-
-  width:100%;
-
-  padding:12px;
-
-  margin-top:10px;
-
-  box-sizing:border-box;
+.card {
+  max-width: 420px;
+  margin: auto;
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
 }
 
-button{
-
-  width:100%;
-
-  padding:12px;
-
-  margin-top:10px;
-
-  cursor:pointer;
+.card h2 {
+  color: var(--royal-green);
+  font-weight: 700;
 }
 
-#msg{
+.btn-royal {
+  background: var(--royal-green);
+  color: white;
+  border: none;
+}
 
-  margin-top:15px;
-  color:red;
+.btn-royal:hover {
+  background: var(--royal-green-dark);
+  color: white;
+}
+
+.btn-gold {
+  background: var(--gold);
+  color: var(--royal-green-dark);
+  border: none;
+  font-weight: 600;
+}
+
+.btn-gold:hover {
+  background: #c19b2e;
+  color: var(--royal-green-dark);
+}
+
+.form-control:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
+}
+
+#msg {
+  margin-top: 15px;
 }
