@@ -1,40 +1,59 @@
-<html lang="cs">
+<!DOCTYPE html>
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vítejte na mé osobní stránce</title>
-    <link rel="stylesheet" href="styles.css">
+
+  <meta charset="UTF-8">
+  <title>Login</title>
+
+  <link
+    rel="stylesheet"
+    href="css/style.css"
+  >
+
 </head>
+
 <body>
-    <header>
-        <h1>Vítejte na mé osobní stránce</h1>
-        <nav>
-            <ul>
-                <li><a href="#about">O mně</a></li>
-                <li><a href="#projects">Projekty</a></li>
-                <li><a href="#contact">Kontakt</a></li>
-            </ul>
-        </nav>
-    </header>
 
-    <section id="about">
-        <h2>O mně</h2>
-        <p>Ahoj! Jsem nadšený vývojář a milovník technologií. Mám zkušenosti s webovým vývojem, programováním a designem. Rád se učím nové věci a pracuji na zajímavých projektech.</p>
-    </section>
+<div class="card">
 
-    <section id="projects">
-        <h2>Projekty</h2>
-        <ul>
-            <li><strong>Projekt 1:</strong> Webová aplikace pro správu úkolů.</li>
-            <li><strong>Projekt 2:</strong> Mobilní aplikace pro sledování fitness aktivit.</li>
-            <li><strong>Projekt 3:</strong> Open-source knihovna pro zpracování dat.</li>
-        </ul>
-    </section>
+  <h2>Login</h2>
 
-    <section id="contact">
-        <h2>Kontakt</h2>
-        <p>Můžete mě kontaktovat prostřednictvím e-mailu: <a href="mailto:vasemail@example.com">vasemail@example.com</a></p>
-    </section>
-    
+  <input
+    id="email"
+    placeholder="Email"
+  >
+
+  <input
+    id="password"
+    type="password"
+    placeholder="Password"
+  >
+
+  <button onclick="login()">
+    Login
+  </button>
+
+  <button onclick="signup()">
+    Sign Up
+  </button>
+
+  <button onclick="googleLogin()">
+    Continue with Google
+  </button>
+
+  <button onclick="resetPassword()">
+    Reset Password
+  </button>
+
+  <div id="msg"></div>
+
+</div>
+
+<script
+  type="module"
+  src="js/auth.js"
+></script>
+
 </body>
 </html>
