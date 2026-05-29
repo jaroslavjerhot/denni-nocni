@@ -56,7 +56,7 @@ window.signup = async function(){
 };
 
 window.googleLogin = async function(){
-
+  
   try{
 
     await signInWithPopup(
