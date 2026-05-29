@@ -7,6 +7,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
 window.registerUser = async function () {
+  alert("Here.");
   const emailValue = email.value.trim().toLowerCase();
   const passwordValue = password.value;
   const password2Value = password2.value;

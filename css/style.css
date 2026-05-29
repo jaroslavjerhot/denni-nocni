@@ -67,3 +67,24 @@ body {
 #msg {
   margin-top: 15px;
 }
+.register-card {
+  max-width: 760px;
+}
+
+@media (max-width: 576px) {
+  .register-card {
+    max-width: 100%;
+    padding: 1.25rem !important;
+  }
+
+  .form-control,
+  .form-select,
+  .btn {
+    font-size: 1rem;
+    min-height: 46px;
+  }
+
+  body {
+    background-attachment: scroll;
+  }
+}
