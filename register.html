@@ -9,7 +9,7 @@
         name="viewport"
         content="width=device-width, initial-scale=1">
 
-    <title>Registration</title>
+    <title>denní|noční - Registrace</title>
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -32,29 +32,36 @@
             <div class="card card-auth p-4 p-md-5">
 
                 <h2 class="text-center mb-4">
-                    Registration
+                    denní|noční - Registrace
                 </h2>
 
                 <!-- EMAIL -->
-
+                <div class="section-title">Email</div>
                 <div class="row mb-3">
 
                     <div class="col-12">
 
-                        <label class="form-label">
-                            Email
-                        </label>
+                        <!-- <label class="form-label">Email</label> -->
+                        <input id="email" type="email" class="form-control" placeholder="name@vfn.cz" value="jana.test2@vfn.cz">
+                        <div class="form-text">Email musí být ve formátu @vfn.cz.</div>
 
-                        <input
-                            id="email"
-                            type="email"
-                            class="form-control"
-                            placeholder="name@vfn.cz">
+                    </div>
 
-                        <div class="form-text">
-                            Only @vfn.cz email addresses are allowed.
-                        </div>
+                </div>
+                <!-- PASSWORD -->
 
+                <div class="section-title">Heslo</div>
+
+                <div class="row g-2 mb-4">
+
+                    <div class="col-12 col-md-6">
+                      <!-- <label class="form-label">Heslo</label> -->
+                      <input id="password" type="password" class="form-control" placeholder="Heslo" value="test1234">
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <!-- <label class="form-label">Heslo znovu</label> -->
+                        <input id="password2" type="password" class="form-control" placeholder="Heslo znovu" value="test1234">          
                     </div>
 
                 </div>
@@ -65,49 +72,53 @@
 
                     <div class="col-12 col-md-2">
 
-                        <label class="form-label">
+                        <!-- <label class="form-label">
                             Prefix
-                        </label>
+                        </label> -->
 
                         <input
                             id="prefix"
-                            class="form-control">
+                            class="form-control"
+                            placeholder="Titul před jménem">
 
                     </div>
 
                     <div class="col-12 col-md-4">
 
-                        <label class="form-label">
+                        <!-- <label class="form-label">
                             Given name
-                        </label>
+                        </label> -->
 
                         <input
                             id="givenname"
-                            class="form-control">
+                            class="form-control"
+                            placeholder="Jméno">
 
                     </div>
 
                     <div class="col-12 col-md-4">
 
-                        <label class="form-label">
+                        <!-- <label class="form-label">
                             Surname
-                        </label>
+                        </label> -->
 
                         <input
                             id="surname"
-                            class="form-control">
+                            class="form-control"
+                            placeholder="Příjmení">
 
                     </div>
 
                     <div class="col-12 col-md-2">
 
-                        <label class="form-label">
+                        <!-- <label class="form-label">
                             Suffix
-                        </label>
+                        </label> -->
 
                         <input
                             id="suffix"
-                            class="form-control">
+                            class="form-control"
+                            placeholder="Titul za jménem">
 
                     </div>
 
@@ -119,13 +130,32 @@
 
                     <div class="col-12">
 
-                        <label class="form-label">
-                            Phone
-                        </label>
+                        <!-- <label class="form-label">
+                            Telefonní číslo
+                        </label> -->
 
                         <input
                             id="phone"
-                            class="form-control">
+                            class="form-control"
+                            placeholder="Telefonní číslo">
+
+                    </div>
+
+                </div>
+                <!-- shortname -->
+
+                <div class="row mb-3">
+
+                    <div class="col-12">
+
+                        <!-- <label class="form-label">
+                            Shortname
+                        </label> -->
+
+                        <input
+                            id="shortname"
+                            class="form-control"
+                            placeholder="Zkrácené jméno pro kolegy">
 
                     </div>
 
@@ -137,37 +167,19 @@
 
                     <div class="col-12">
 
-                        <label class="form-label">
+                        <!-- <label class="form-label">
                             Position
-                        </label>
+                        </label> -->
 
-                        <select
-                            id="position"
-                            class="form-select">
+                        <select id="position" class="form-select">
 
-                            <option value="">
-                                Select position
-                            </option>
-
-                            <option value="doctor">
-                                Doctor
-                            </option>
-
-                            <option value="nurse">
-                                Nurse
-                            </option>
-
-                            <option value="head_nurse">
-                                Head Nurse
-                            </option>
-
-                            <option value="admin">
-                                Admin
-                            </option>
-
-                            <option value="other">
-                                Other
-                            </option>
+                            <option value="">Vyberte pracovní pozici</option>
+                            <option value="doctor">Lékař/ka</option>
+                            <option value="head_nurse">Vrchní sestra</option>
+                            <option value="dept_nurse">Staniční sestra</option>
+                            <option value="midwife">Porodní asistentka</option>                            
+                            <option value="nurse">Sestra</option>                            
+                            <option value="other">Jiné</option>
 
                         </select>
 
@@ -177,99 +189,65 @@
 
                 <!-- UNFAVORITE -->
 
-                <div class="section-title">
-                    Unfavorite colleagues
-                </div>
+                <div class="section-title">Neoblíbení kolegové/yně (nebudou se vám zobrazovat v rozpisu)</div>
+                
 
                 <div class="row g-2">
 
                     <div class="col-12 col-md-6">
                         <select id="unfavorite1" class="form-select">
-                            <option value="">Colleague 1</option>
+                            <option value="">Kolega/yně 1</option>
                         </select>
                     </div>
 
                     <div class="col-12 col-md-6">
                         <select id="unfavorite2" class="form-select">
-                            <option value="">Colleague 2</option>
+                            <option value="">Kolega/yně 2</option>
                         </select>
                     </div>
 
                     <div class="col-12 col-md-6">
                         <select id="unfavorite3" class="form-select">
-                            <option value="">Colleague 3</option>
+                            <option value="">Kolega/yně 3</option>
                         </select>
                     </div>
 
                     <div class="col-12 col-md-6">
                         <select id="unfavorite4" class="form-select">
-                            <option value="">Colleague 4</option>
+                            <option value="">Kolega/yně 4</option>
                         </select>
                     </div>
 
-                    <div class="col-12">
+                    <!-- <div class="col-12">
                         <select id="unfavorite5" class="form-select">
-                            <option value="">Colleague 5</option>
+                            <option value="">Kolega/yně 5</option>
                         </select>
                     </div>
+                    
+                    <div class="col-12">
+                        <select id="unfavorite6" class="form-select">
+                            <option value="">Kolega/yně 6</option>
+                        </select>
+                    </div> -->
 
                 </div>
 
-                <!-- PASSWORD -->
-
-                <div class="section-title">
-                    Password
-                </div>
-
-                <div class="row g-2 mb-4">
-
-                    <div class="col-12 col-md-6">
-
-                        <input
-                            id="password"
-                            type="password"
-                            class="form-control"
-                            placeholder="Password">
-
-                    </div>
-
-                    <div class="col-12 col-md-6">
-
-                        <input
-                            id="password2"
-                            type="password"
-                            class="form-control"
-                            placeholder="Repeat password">
-
-                    </div>
-
-                </div>
-
+                
                 <!-- BUTTONS -->
-
+<div class="row mb-3">  </div>
                 <div class="row g-2">
-
                     <div class="col-12 col-md-6">
 
                         <button
-                            type="button"
-                            class="btn btn-royal w-100"
-                            onclick="registerUser()">
-
-                            Register
-
+                            type="button" class="btn btn-royal w-100" onclick="registerUser()">
+                            Registrovat se
                         </button>
 
                     </div>
 
                     <div class="col-12 col-md-6">
-
-                        <a
-                            href="index.html"
-                            class="btn btn-outline-success w-100">
-
-                            Back to Login
-
+                        <a href="index.html" class="btn btn-outline-success w-100">
+                            Zpět na přihlášení
                         </a>
 
                     </div>

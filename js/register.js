@@ -7,23 +7,23 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
 window.registerUser = async function () {
-  alert("Here.");
+  
   const emailValue = email.value.trim().toLowerCase();
   const passwordValue = password.value;
   const password2Value = password2.value;
 
   if (!emailValue.endsWith("@vfn.cz")) {
-    showError("Email must end with @vfn.cz");
+    showError("Email musí být ve formátu @vfn.cz");
     return;
   }
 
   if (passwordValue !== password2Value) {
-    showError("Passwords do not match");
+    showError("Hesla se neshodují");
     return;
   }
 
   if (passwordValue.length < 8) {
-    showError("Password must have at least 8 characters");
+    showError("Heslo musí mít alespoň 8 znaků");
     return;
   }
 
