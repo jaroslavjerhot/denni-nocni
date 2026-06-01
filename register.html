@@ -126,9 +126,9 @@
 
                 <!-- PHONE -->
 
-                <div class="row mb-3">
+                <div class="row g-2 mb-3">
 
-                    <div class="col-12">
+                    <div class="col-12 col-md-6">
 
                         <!-- <label class="form-label">
                             Telefonní číslo
@@ -141,12 +141,9 @@
 
                     </div>
 
-                </div>
-                <!-- shortname -->
+                
 
-                <div class="row mb-3">
-
-                    <div class="col-12">
+                    <div class="col-12 col-md-6">
 
                         <!-- <label class="form-label">
                             Shortname
@@ -163,9 +160,25 @@
 
                 <!-- POSITION -->
 
-                <div class="row mb-3">
+                <div class="row g-2">
 
-                    <div class="col-12">
+                    <div class="col-12 col-md-6">
+
+                        <!-- <label class="form-label">
+                            Position
+                        </label> -->
+
+                        <select id="department" class="form-select">
+
+                            <option value="">Vyberte oddělení</option>
+                            <option value="1">VFN-Apolinář</option>
+                            
+
+                        </select>
+
+                    </div>
+                    
+                    <div class="col-12 col-md-6">
 
                         <!-- <label class="form-label">
                             Position
@@ -174,9 +187,10 @@
                         <select id="position" class="form-select">
 
                             <option value="">Vyberte pracovní pozici</option>
-                            <option value="doctor">Lékař/ka</option>
-                            <option value="head_nurse">Vrchní sestra</option>
-                            <option value="dept_nurse">Staniční sestra</option>
+                            <!-- <option value="p_doc">Primář/ka</option>
+                            <option value="doc">Lékař/ka</option> -->
+                            <option value="h_nur">Vrchní sestra</option>
+                            <option value="d_nur">Staniční sestra</option>
                             <option value="midwife">Porodní asistentka</option>                            
                             <option value="nurse">Sestra</option>                            
                             <option value="other">Jiné</option>
@@ -189,7 +203,7 @@
 
                 <!-- UNFAVORITE -->
 
-                <div class="section-title">Neoblíbení kolegové/yně (nebudou se vám zobrazovat v rozpisu)</div>
+                <div class="section-title">Neoblíbení kolegové/yně (nebudou se vám přiřazovat do směn)</div>
                 
 
                 <div class="row g-2">
