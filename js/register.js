@@ -80,6 +80,35 @@ window.registerUser = async function () {
 };
 
 function showError(text) {
-  msg.className = "text-danger text-center mt-3";
-  msg.innerText = text;
+  document.getElementById(
+        "errorModalText"
+    ).innerText = text;
+
+    const modal =
+        new bootstrap.Modal(
+            document.getElementById(
+                "errorModal"
+            )
+        );
+
+    modal.show();
 }
+
+window.togglePassword = function(inputId, button) {
+
+    const input =
+        document.getElementById(inputId);
+
+    if (input.type === "password") {
+
+        input.type = "text";
+        button.innerHTML = "🙈";
+
+    } else {
+
+        input.type = "password";
+        button.innerHTML = "👁";
+
+    }
+
+};

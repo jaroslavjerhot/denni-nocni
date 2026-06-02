@@ -29,11 +29,14 @@
 
         <div class="col-12 col-xl-10">
 
-            <div class="card card-auth p-4 p-md-5">
+            <div class="card card-auth p-4 p-md-5 mx-auto">
 
                 <h2 class="text-center mb-4">
                     denní|noční - Registrace
                 </h2>
+                <h6 class="text-center mb-4">
+                    Prvotní registraci proveďte zadáním pracovního emailu. Pak si zvolte své heslo. Některé informace se vám načtou z databáze zaměstnanců.
+                </h6>
 
                 <!-- EMAIL -->
                 <div class="section-title">Email</div>
@@ -42,7 +45,7 @@
                     <div class="col-12">
 
                         <!-- <label class="form-label">Email</label> -->
-                        <input id="email" type="email" class="form-control" placeholder="name@vfn.cz" value="jana.test2@vfn.cz">
+                        <input id="email" type="email" class="form-control" placeholder="name@vfn.cz" value="petra.svobodova@vfn.cz">
                         <div class="form-text">Email musí být ve formátu @vfn.cz.</div>
 
                     </div>
@@ -50,18 +53,33 @@
                 </div>
                 <!-- PASSWORD -->
 
-                <div class="section-title">Heslo</div>
+                <div class="section-title">Heslo (min. 8 znaků), obě pole musí být shodná</div>
 
                 <div class="row g-2 mb-4">
 
                     <div class="col-12 col-md-6">
                       <!-- <label class="form-label">Heslo</label> -->
-                      <input id="password" type="password" class="form-control" placeholder="Heslo" value="test1234">
+
+                        <div class="input-group">
+                        <input id="password" type="password" class="form-control" placeholder="Heslo"
+                             value="test1234">
+
+                        <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('password', this)">
+                            👁
+                        </button>
+                        </div>
                     </div>
 
                     <div class="col-12 col-md-6">
-                        <!-- <label class="form-label">Heslo znovu</label> -->
-                        <input id="password2" type="password" class="form-control" placeholder="Heslo znovu" value="test1234">          
+                         <!-- <label class="form-label">Heslo znovu</label> -->
+                    <div class="input-group">
+                        <input id="password2" type="password" class="form-control" placeholder="Heslo znovu"
+                             value="test1234">
+
+                        <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('password2', this)">
+                            👁
+                        </button>
+                        </div>
                     </div>
 
                 </div>
@@ -152,7 +170,7 @@
                         <input
                             id="shortname"
                             class="form-control"
-                            placeholder="Zkrácené jméno pro kolegy">
+                            placeholder="Zkrácené jméno pro zobrazování ve směnách (max. 5 znaků)">
 
                     </div>
 
@@ -160,7 +178,7 @@
 
                 <!-- POSITION -->
 
-                <div class="row g-2">
+                <div class="row g-2 mb-3">
 
                     <div class="col-12 col-md-6">
 
@@ -169,11 +187,8 @@
                         </label> -->
 
                         <select id="department" class="form-select">
-
                             <option value="">Vyberte oddělení</option>
                             <option value="1">VFN-Apolinář</option>
-                            
-
                         </select>
 
                     </div>
@@ -184,19 +199,98 @@
                             Position
                         </label> -->
 
-                        <select id="position" class="form-select">
+                        <select id="preferred_room" class="form-select">
+
+                            <option value="">Vyberte preferovaný sál</option>
+                            <!-- <option value="p_doc">Primář/ka</option>
+                            <option value="doc">Lékař/ka</option> -->
+                            <option value="room0">Je mi to jedno</option>
+                            <option value="room1">Porodní centrum</option>
+                            <option value="room2">2. porodní sál</option>
+                            
+                        </select>
+
+                    </div>
+                </div>
+                <div class="row g-2 mb-3">
+
+
+                    <div class="col-12 col-md-6">
+
+                        <!-- <label class="form-label">
+                            Position
+                        </label> -->
+
+                        <select id="pos1" class="form-select">
 
                             <option value="">Vyberte pracovní pozici</option>
                             <!-- <option value="p_doc">Primář/ka</option>
                             <option value="doc">Lékař/ka</option> -->
                             <option value="h_nur">Vrchní sestra</option>
                             <option value="d_nur">Staniční sestra</option>
+                            <option value="instrum">Instrumentář/ka</option>
                             <option value="midwife">Porodní asistentka</option>                            
-                            <option value="nurse">Sestra</option>                            
+                            <!-- <option value="nurse">Sestra</option>                             -->
                             <option value="other">Jiné</option>
 
                         </select>
 
+                    </div>
+
+                    <div class="col-12 col-md-6">
+
+                        <!-- <label class="form-label">
+                            Position
+                        </label> -->
+
+                        <select id="pos2" class="form-select">
+
+                            <option value="">Vyberte doplňkovou pracovní pozici</option>
+                            <!-- <option value="p_doc">Primář/ka</option>
+                            <option value="doc">Lékař/ka</option> -->
+                            <option value="h_nur">Vrchní sestra</option>
+                            <option value="d_nur">Staniční sestra</option>
+                            <option value="instrum">Instrumentář/ka</option>
+                            <option value="midwife">Porodní asistentka</option>                            
+                            <!-- <option value="nurse">Sestra</option>                             -->
+                            <option value="other">Jiné</option>
+
+                        </select>
+
+                    </div>
+
+                    
+                </div>
+
+                <!-- FAVORITE -->
+
+                <div class="section-title">Oblíbení kolegové/yně (budou preferováni při rozepisování do směnách)</div>
+                
+
+                <div class="row g-2">
+
+                    <div class="col-12 col-md-6">
+                        <select id="favorite1" class="form-select">
+                            <option value="">Oblíbený kolega/yně 1</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <select id="favorite2" class="form-select">
+                            <option value="">Oblíbený kolega/yně 2</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <select id="favorite3" class="form-select">
+                            <option value="">Oblíbený kolega/yně 3</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <select id="favorite4" class="form-select">
+                            <option value="">Oblíbený kolega/yně 4</option>
+                        </select>
                     </div>
 
                 </div>
@@ -210,45 +304,33 @@
 
                     <div class="col-12 col-md-6">
                         <select id="unfavorite1" class="form-select">
-                            <option value="">Kolega/yně 1</option>
+                            <option value="">Neoblíbený kolega/yně 1</option>
                         </select>
                     </div>
 
                     <div class="col-12 col-md-6">
                         <select id="unfavorite2" class="form-select">
-                            <option value="">Kolega/yně 2</option>
+                            <option value="">Neoblíbený kolega/yně 2</option>
                         </select>
                     </div>
 
                     <div class="col-12 col-md-6">
                         <select id="unfavorite3" class="form-select">
-                            <option value="">Kolega/yně 3</option>
+                            <option value="">Neoblíbený kolega/yně 3</option>
                         </select>
                     </div>
 
                     <div class="col-12 col-md-6">
                         <select id="unfavorite4" class="form-select">
-                            <option value="">Kolega/yně 4</option>
+                            <option value="">Neoblíbený kolega/yně 4</option>
                         </select>
                     </div>
-
-                    <!-- <div class="col-12">
-                        <select id="unfavorite5" class="form-select">
-                            <option value="">Kolega/yně 5</option>
-                        </select>
-                    </div>
-                    
-                    <div class="col-12">
-                        <select id="unfavorite6" class="form-select">
-                            <option value="">Kolega/yně 6</option>
-                        </select>
-                    </div> -->
 
                 </div>
 
                 
                 <!-- BUTTONS -->
-<div class="row mb-3">  </div>
+            <div class="row mb-3">  </div>
                 <div class="row g-2">
                     <div class="col-12 col-md-6">
 
@@ -272,6 +354,42 @@
                     id="msg"
                     class="text-center mt-3">
                 </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<!-- Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">Chyba</h5>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <div id="errorModalText"></div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    type="button" class="btn btn-royal" data-bs-dismiss="modal">
+                    OK
+                </button>
 
             </div>
 
