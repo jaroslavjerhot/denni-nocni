@@ -22,3 +22,18 @@ export async function callApi(action, payload = {}) {
 
   return await response.json();
 }
+
+export async function publicApi(action, payload = {}) {
+    //alert("Volám publicAPI: " + action);
+    // showMsg("wait", "Volám API...");
+    const response = await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({
+            action: action,
+            ...payload
+        })
+    });
+
+    const result = await response.json();
+    return result;
+}

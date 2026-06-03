@@ -1,10 +1,19 @@
 import { auth } from "../firebase/config.js";
 import { callApi } from "./api.js";
+import { publicApi } from "./api.js";
 
 import {
   createUserWithEmailAndPassword,
   updateProfile
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+
+email.onblur = function () {
+  const emailValue = email.value.trim().toLowerCase();
+  if (emailValue && !isValidEmail(emailValue)) {
+    showMsg("err", "Toto není platný email");
+  }
+};
 
 window.registerUser = async function () {
   
@@ -12,87 +21,155 @@ window.registerUser = async function () {
   const passwordValue = password.value;
   const password2Value = password2.value;
 
-  if (!emailValue.endsWith("@vfn.cz")) {
-    showError("Email musí být ve formátu @vfn.cz");
+  if (!isValidEmail(emailValue)) {
+    showMsg("err", "Toto není platný email");
     return;
   }
 
   if (passwordValue !== password2Value) {
-    showError("Hesla se neshodují");
+    showMsg("wait", "Hesla se neshodují");
     return;
   }
 
   if (passwordValue.length < 8) {
-    showError("Heslo musí mít alespoň 8 znaků");
+    showMsg("err", "Heslo musí mít alespoň 8 znaků");
     return;
   }
+  //alert("Kontrola emailu..." + emailValue);
+
+  showMsg("wait", `Kontroluji, zda je email ${emailValue} předregistrovaný...`);
+  let checkResult;
+  try {
+       checkResult = await publicApi("checkPreRegisteredEmail", {
+          email: emailValue
+      });
+      //alert('checkResult: ' + JSON.stringify(checkResult));
+      //return;
+  } finally {
+      hideMsg();
+      //alert('checkResult: ' + JSON.stringify(checkResult));
+      //showMsg("succ", "Zkontrolováno" + JSON.stringify(checkResult));
+  }
+
+
+
+
+  if (!checkResult.ok) {
+    showMsg("err", checkResult.error);
+    return;
+  } else {
+    localStorage.setItem("preRegisteredUser", JSON.stringify(checkResult));
+  //  alert('checkResult: ' + JSON.stringify(checkResult));
+  }
+
 
   try {
-    const fullName = [
-      prefix.value,
-      givenname.value,
-      surname.value,
-      suffix.value
-    ].filter(Boolean).join(" ");
+    // const fullName = [
+    //   prefix.value,
+    //   givenname.value,
+    //   surname.value,
+    //   suffix.value
+    // ].filter(Boolean).join(" ");
 
+    //alert("auth" + JSON.stringify(auth));
     const credential = await createUserWithEmailAndPassword(
       auth,
       emailValue,
       passwordValue
     );
 
-    await updateProfile(credential.user, {
-      displayName: fullName
-    });
+    // await updateProfile(credential.user, {
+    //   displayName: fullName
+    // });
 
-    const result = await callApi("registerProfile", {
-      profile: {
-        email: emailValue,
-        prefix: prefix.value.trim(),
-        givenname: givenname.value.trim(),
-        surname: surname.value.trim(),
-        suffix: suffix.value.trim(),
-        shortname: shortname.value.trim(),
-        phone: phone.value.trim(),
-        position: position.value,
-        unfavorite_1: unfavorite1.value,
-        unfavorite_2: unfavorite2.value,
-        unfavorite_3: unfavorite3.value,
-        unfavorite_4: unfavorite4.value,
-      }
-    });
+    // const result = await callApi("registerProfile", {
+    //   profile: {
+    //     email: emailValue,
+    //     prefix: prefix.value.trim(),
+    //     givenname: givenname.value.trim(),
+    //     surname: surname.value.trim(),
+    //     suffix: suffix.value.trim(),
+    //     shortname: shortname.value.trim(),
+    //     phone: phone.value.trim(),
+    //     position: position.value,
+    //     unfavorite_1: unfavorite1.value,
+    //     unfavorite_2: unfavorite2.value,
+    //     unfavorite_3: unfavorite3.value,
+    //     unfavorite_4: unfavorite4.value,
+    //   }
+    // });
 
-    if (!result.ok) {
-      showError(result.error);
-      return;
-    }
+    // if (!result.ok) {
+    //   showMsg("err", result.error);
+    //   return;
+    // }
 
-    msg.className = "text-success text-center mt-3";
-    msg.innerText = "Registration successful";
+    // msg.className = "text-success text-center mt-3";
+    // msg.innerText = "Registration successful";
 
     setTimeout(() => {
-      location.href = "dashboard.html";
+      location.href = "profile.html";
     }, 800);
 
   } catch (err) {
-    showError(err.message);
+    showMsg("err", err.message);
   }
 };
 
-function showError(text) {
-  document.getElementById(
-        "errorModalText"
-    ).innerText = text;
+function showMsg(modalType, text) {
+    const modalTitle = document.getElementById("modalTitle");
+    const modalText = document.getElementById("modalText");
 
+
+
+    switch (modalType) {
+
+        case "err":
+          modalTitle.innerText = "Chyba";
+          modalHeader.className ="modal-header bg-danger text-white";
+            break;
+
+        case "succ":
+            modalTitle.innerText = "Úspěch";
+            modalHeader.className = "modal-header bg-success text-white";
+            break;
+
+        case "warn":
+            modalTitle.innerText = "Upozornění";
+            modalHeader.className = "modal-header bg-warning text-white";
+            break;
+
+        case "wait":
+            modalTitle.innerText = "Čekejte";
+            modalHeader.className = "modal-header bg-primary text-white";
+            const modalClose = document.getElementById("modalClose");
+            modalClose.style.display = "none";
+            break;
+
+        default:
+            modalTitle.innerText = "Informace";
+            modalHeader.className = "modal-header bg-secondary text-white";
+
+    }
+    modalText.innerText = text;
+    
     const modal =
         new bootstrap.Modal(
-            document.getElementById(
-                "errorModal"
-            )
+            document.getElementById("genericModal")
         );
 
     modal.show();
 }
+
+function hideMsg() {
+  //alert("hideMsg");  
+  const modal = document.getElementById("genericModal")
+  const bootstrapModal = bootstrap.Modal.getInstance(modal);
+  if (bootstrapModal) {
+    bootstrapModal.hide();
+  }
+}
+
 
 window.togglePassword = function(inputId, button) {
 
@@ -112,3 +189,7 @@ window.togglePassword = function(inputId, button) {
     }
 
 };
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}

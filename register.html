@@ -13,6 +13,7 @@
 
     <link href="css/style.css" rel="stylesheet">
 
+    <link rel="icon" type="image/png" href="img/favicon_letter_32.png">
 </head>
 
 <body>
@@ -48,6 +49,7 @@
 
                         <!-- <label class="form-label">Email</label> -->
                         <input id="email" type="email" class="form-control" placeholder="name@vfn.cz" value="petra.svobodova@vfn.cz">
+                        <!-- <input id="email" type="email" class="form-control"> -->
                         <!-- <div class="form-text">Email musí být ve formátu @vfn.cz.</div> -->
 
                     </div>
@@ -120,45 +122,30 @@
 
 </div>
 <!-- Modal -->
-<div class="modal fade" id="errorModal" tabindex="-1">
+<div class="modal fade" id="genericModal" tabindex="-1">
 
     <div class="modal-dialog">
-
         <div class="modal-content">
-
-            <div class="modal-header">
-
-                <h5 class="modal-title">Chyba</h5>
-
-                <button type="button" class="btn-close" data-bs-dismiss="modal">
+            <div class="modal-header" id="modalHeader">
+                <h5 class="modal-title" id="modalTitle"></h5>
+                <button type="button" class="btn-close" id="modalClose" data-bs-dismiss="modal">
                 </button>
-
             </div>
 
             <div class="modal-body">
-
-                <div id="errorModalText"></div>
-
+                <div id="modalText"></div>
             </div>
 
             <div class="modal-footer">
-
-                <button
-                    type="button" class="btn btn-royal" data-bs-dismiss="modal">
-                    OK
+                <button type="button" class="btn btn-royal" data-bs-dismiss="modal">                    OK
                 </button>
-
             </div>
-
         </div>
-
     </div>
-
 </div>
 
 <script
-    type="module"
-    src="js/register.js">
+    type="module" src="js/register.js">
 </script>
 
 <script
