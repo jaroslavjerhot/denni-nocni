@@ -25,15 +25,23 @@
 
             <div class="card card-auth p-4 p-md-5 mx-auto">
 
+                <h1 class="text-center mb-4" style="font-size: 3rem;">
+                    denní|noční
+                </h1>
                 <h2 class="text-center mb-4">
-                    denní|noční - Registrace
+                    Registrace|Změna hesla
                 </h2>
+                
                 <h6 class="text-center mb-4">
-                    Prvotní registraci proveďte zadáním pracovního emailu. Pak si zvolte své heslo. Některé informace se vám načtou z databáze zaměstnanců.
+                    Zde si můžete vytvořit nový účet a nastavit nebo změnit své heslo. 
+                    <br>
+                    Po zadání emailu a hesla vám přijde odkaz pro potvrzení registrace na váš email. Pokud neobdržíte email, zkontrolujte složku spamu nebo se obraťte na administrátora.
+                    <br>
+                    v 3.6.2026 12.12
                 </h6>
 
                 <!-- EMAIL -->
-                <div class="section-title">Email</div>
+                <div class="section-title">Email (pouze registrovaný u vašeho zaměstnavatele)</div>
                 <div class="row mb-3">
 
                     <div class="col-12">
@@ -78,251 +86,6 @@
 
                 </div>
 
-                <!-- NAME -->
-
-                <div class="row g-2 mb-3">
-
-                    <div class="col-12 col-md-2">
-
-                        <!-- <label class="form-label">
-                            Prefix
-                        </label> -->
-
-                        <input
-                            id="prefix"
-                            class="form-control"
-                            placeholder="Titul před jménem">
-
-                    </div>
-
-                    <div class="col-12 col-md-4">
-
-                        <!-- <label class="form-label">
-                            Given name
-                        </label> -->
-
-                        <input
-                            id="givenname"
-                            class="form-control"
-                            placeholder="Jméno">
-
-                    </div>
-
-                    <div class="col-12 col-md-4">
-
-                        <!-- <label class="form-label">
-                            Surname
-                        </label> -->
-
-                        <input
-                            id="surname"
-                            class="form-control"
-                            placeholder="Příjmení">
-
-                    </div>
-
-                    <div class="col-12 col-md-2">
-
-                        <!-- <label class="form-label">
-                            Suffix
-                        </label> -->
-
-                        <input
-                            id="suffix"
-                            class="form-control"
-                            placeholder="Titul za jménem">
-
-                    </div>
-
-                </div>
-
-                <!-- PHONE -->
-
-                <div class="row g-2 mb-3">
-
-                    <div class="col-12 col-md-6">
-
-                        <!-- <label class="form-label">
-                            Telefonní číslo
-                        </label> -->
-
-                        <input
-                            id="phone"
-                            class="form-control"
-                            placeholder="Telefonní číslo">
-
-                    </div>
-
-                
-
-                    <div class="col-12 col-md-6">
-
-                        <!-- <label class="form-label">
-                            Shortname
-                        </label> -->
-
-                        <input
-                            id="shortname"
-                            class="form-control"
-                            placeholder="Zkrácené jméno pro zobrazování ve směnách (max. 5 znaků)">
-
-                    </div>
-
-                </div>
-
-                <!-- POSITION -->
-
-                <div class="row g-2 mb-3">
-
-                    <div class="col-12 col-md-6">
-
-                        <!-- <label class="form-label">
-                            Position
-                        </label> -->
-
-                        <select id="department" class="form-select">
-                            <option value="">Vyberte oddělení</option>
-                            <option value="1">VFN-Apolinář</option>
-                        </select>
-
-                    </div>
-                    
-                    <div class="col-12 col-md-6">
-
-                        <!-- <label class="form-label">
-                            Position
-                        </label> -->
-
-                        <select id="preferred_room" class="form-select">
-
-                            <option value="">Vyberte preferovaný sál</option>
-                            <!-- <option value="p_doc">Primář/ka</option>
-                            <option value="doc">Lékař/ka</option> -->
-                            <option value="room0">Je mi to jedno</option>
-                            <option value="room1">Porodní centrum</option>
-                            <option value="room2">2. porodní sál</option>
-                            
-                        </select>
-
-                    </div>
-                </div>
-                <div class="row g-2 mb-3">
-
-
-                    <div class="col-12 col-md-6">
-
-                        <!-- <label class="form-label">
-                            Position
-                        </label> -->
-
-                        <select id="pos1" class="form-select">
-
-                            <option value="">Vyberte pracovní pozici</option>
-                            <!-- <option value="p_doc">Primář/ka</option>
-                            <option value="doc">Lékař/ka</option> -->
-                            <option value="h_nur">Vrchní sestra</option>
-                            <option value="d_nur">Staniční sestra</option>
-                            <option value="instrum">Instrumentář/ka</option>
-                            <option value="midwife">Porodní asistentka</option>                            
-                            <!-- <option value="nurse">Sestra</option>                             -->
-                            <option value="other">Jiné</option>
-
-                        </select>
-
-                    </div>
-
-                    <div class="col-12 col-md-6">
-
-                        <!-- <label class="form-label">
-                            Position
-                        </label> -->
-
-                        <select id="pos2" class="form-select">
-
-                            <option value="">Vyberte doplňkovou pracovní pozici</option>
-                            <!-- <option value="p_doc">Primář/ka</option>
-                            <option value="doc">Lékař/ka</option> -->
-                            <option value="h_nur">Vrchní sestra</option>
-                            <option value="d_nur">Staniční sestra</option>
-                            <option value="instrum">Instrumentář/ka</option>
-                            <option value="midwife">Porodní asistentka</option>                            
-                            <!-- <option value="nurse">Sestra</option>                             -->
-                            <option value="other">Jiné</option>
-
-                        </select>
-
-                    </div>
-
-                    
-                </div>
-
-                <!-- FAVORITE -->
-
-                <div class="section-title">Oblíbení kolegové/yně (budou preferováni při rozepisování do směnách)</div>
-                
-
-                <div class="row g-2">
-
-                    <div class="col-12 col-md-6">
-                        <select id="favorite1" class="form-select">
-                            <option value="">Oblíbený kolega/yně 1</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12 col-md-6">
-                        <select id="favorite2" class="form-select">
-                            <option value="">Oblíbený kolega/yně 2</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12 col-md-6">
-                        <select id="favorite3" class="form-select">
-                            <option value="">Oblíbený kolega/yně 3</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12 col-md-6">
-                        <select id="favorite4" class="form-select">
-                            <option value="">Oblíbený kolega/yně 4</option>
-                        </select>
-                    </div>
-
-                </div>
-
-                <!-- UNFAVORITE -->
-
-                <div class="section-title">Neoblíbení kolegové/yně (nebudou se vám přiřazovat do směn)</div>
-                
-
-                <div class="row g-2">
-
-                    <div class="col-12 col-md-6">
-                        <select id="unfavorite1" class="form-select">
-                            <option value="">Neoblíbený kolega/yně 1</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12 col-md-6">
-                        <select id="unfavorite2" class="form-select">
-                            <option value="">Neoblíbený kolega/yně 2</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12 col-md-6">
-                        <select id="unfavorite3" class="form-select">
-                            <option value="">Neoblíbený kolega/yně 3</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12 col-md-6">
-                        <select id="unfavorite4" class="form-select">
-                            <option value="">Neoblíbený kolega/yně 4</option>
-                        </select>
-                    </div>
-
-                </div>
-
-                
                 <!-- BUTTONS -->
             <div class="row mb-3">  </div>
                 <div class="row g-2">
