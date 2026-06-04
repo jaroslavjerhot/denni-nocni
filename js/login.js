@@ -3,7 +3,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/fireba
 
 import {
     getAuth,
-    createUserWithEmailAndPassword
+    signInWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
 import {
@@ -26,17 +26,16 @@ const firebaseConfig = {
   appId: "1:586087979734:web:5a8d95dd9c75af63140777",
   measurementId: "G-68C3B1BZB1"
 };
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
 document
-    .getElementById("btnRegister")
-    .addEventListener("click", fRegister);
+    .getElementById("btnLogin")
+    .addEventListener("click", fLogin);
 
 
-async function fRegister() {
+async function fLogin() {
 
     const sEmail = document
         .getElementById("email")
@@ -46,10 +45,6 @@ async function fRegister() {
 
     const sPassword = document
         .getElementById("password")
-        .value;
-
-    const sPassword2 = document
-        .getElementById("password2")
         .value;
 
     if (!sEmail) {
@@ -62,21 +57,19 @@ async function fRegister() {
         return;
     }
 
-    if (sPassword.length < 8) {
-        showMsg("err", "Heslo musí mít alespoň 8 znaků.");
-        return;
-    }
-
-    if (sPassword !== sPassword2) {
-        showMsg("err", "Hesla se neshodují.");
-        return;
-    }
-
     try {
+
+        const userCredential = await signInWithEmailAndPassword(
+            auth,
+            sEmail,
+            sPassword
+        );
+
+        const user = userCredential.user;
 
         const qEmployees = query(
             collection(db, "employees"),
-            where("email", "==", sEmail)
+            where("firebase_uid", "==", user.uid)
         );
 
         const employeeSnapshot = await getDocs(qEmployees);
@@ -84,7 +77,7 @@ async function fRegister() {
         if (employeeSnapshot.empty) {
             showMsg(
                 "err",
-                "Tento e-mail není v seznamu povolených zaměstnanců."
+                "Uživatel byl přihlášen, ale nebyl nalezen v seznamu zaměstnanců."
             );
             return;
         }
@@ -95,41 +88,31 @@ async function fRegister() {
         if (employeeData.active !== true) {
             showMsg(
                 "err",
-                "Tento účet není aktivní. Kontaktujte prosím administrátora."
+                "Váš účet není aktivní. Kontaktujte prosím administrátora."
             );
             return;
         }
-
-        if (
-            employeeData.firebase_uid
-            && String(employeeData.firebase_uid).trim() !== ""
-        ) {
-            showMsg(
-                "err",
-                "Tento uživatel je již registrován. Použijte prosím přihlášení."
-            );
-            return;
-        }
-
-        const userCredential = await createUserWithEmailAndPassword(
-            auth,
-            sEmail,
-            sPassword
-        );
-
-        const user = userCredential.user;
 
         await updateDoc(
             doc(db, "employees", employeeDoc.id),
             {
-                firebase_uid: user.uid,
                 last_login: serverTimestamp()
             }
         );
 
         localStorage.setItem("employeeDocId", employeeDoc.id);
+        localStorage.setItem("employeeName", employeeData.name || "");
+        localStorage.setItem("employeeRole", employeeData.role || "");
+        localStorage.setItem("employeeDepartment", employeeData.department || "");
 
-        window.location.href = "profile.html";
+        if (
+            employeeData.role === "admin"
+            || employeeData.role === "manager"
+        ) {
+            window.location.href = "requests.html";
+        } else {
+            window.location.href = "requests.html";
+        }
 
     } catch (err) {
 
@@ -147,23 +130,28 @@ function fGetFirebaseErrorCz(sCode) {
 
     switch (sCode) {
 
-        case "auth/email-already-in-use":
-            return "Tento e-mail je již ve Firebase registrován.";
-
         case "auth/invalid-email":
             return "E-mail má neplatný formát.";
 
-        case "auth/weak-password":
-            return "Heslo je příliš slabé.";
+        case "auth/user-disabled":
+            return "Tento účet byl zakázán.";
+
+        case "auth/user-not-found":
+        case "auth/wrong-password":
+        case "auth/invalid-credential":
+            return "Nesprávný e-mail nebo heslo.";
 
         case "auth/missing-password":
             return "Zadejte heslo.";
+
+        case "auth/too-many-requests":
+            return "Příliš mnoho pokusů o přihlášení. Zkuste to prosím později.";
 
         case "permission-denied":
         case "firestore/permission-denied":
             return "Nemáte oprávnění k této akci.";
 
         default:
-            return "Registrace se nezdařila.";
+            return "Přihlášení se nezdařilo.";
     }
 }

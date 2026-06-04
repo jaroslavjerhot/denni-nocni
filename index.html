@@ -24,24 +24,22 @@
 
             <div class="card card-auth p-4 p-md-5 mx-auto">
 
-                <h1 class="text-center mb-4" style="font-size: 3rem;">
+                <h1 class="text-center mb-1" style="font-size: 3rem;">
                     denní|noční
                 </h1>
-                <h2 class="text-center mb-4">
+               <h6 class="text-center mb-4">
+                    Plánovač pro směnný provoz
+                  </h6>
+
+                <h2 class="text-center mb-5">
                     Přihlášení
                 </h2>
                 
-                <h6 class="text-center mb-4">
-                    Plánovač směn pro nemocnice.
-                    <br>
-                    v 3.6.2026 12.27
-                </h6>
+              <input id="email" class="form-control mb-3" placeholder="Email" value="kristyna.podhorcikova@vfn.cz">
 
-              <input id="email" class="form-control mb-3" placeholder="Email" >
+              <input id="password" class="form-control mb-3" type="password" placeholder="Heslo" value="12345678">
 
-              <input id="password" class="form-control mb-3" type="password" placeholder="Heslo">
-
-              <button class="btn btn-royal w-100 mb-2" onclick="login()">
+              <button class="btn btn-royal w-100 mb-2" id="btnLogin">
                 Přihlásit se
               </button>
 
@@ -53,11 +51,16 @@
                 Pokračovat s Google
               </button> -->
 
-              <button class="btn btn-link text-success w-100" onclick="resetPassword()">
+              <button class="btn btn-link text-success w-100" id="btnResetPassword">
                 Zapomenuté heslo
               </button>
 
               <div id="msg" class="text-danger text-center"></div>
+
+              <h6 class="text-center mb-4">
+                    v 4.6.2026
+                </h6>
+
 
               </div>
   
@@ -70,8 +73,34 @@
   <img src="img/logo_desktop_40.png" class="card-img-top w-25 mx-auto mb-4" alt="Logo">
 </div> -->
 
+<!-- Modal -->
+<div class="modal fade" id="genericModal" tabindex="-1">
 
-<script type="module" src="js/auth.js"></script>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" id="modalHeader">
+                <h5 class="modal-title" id="modalTitle"></h5>
+                <button type="button" class="btn-close" id="modalClose" data-bs-dismiss="modal">
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div id="modalText"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-royal" data-bs-dismiss="modal">                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- <script type="module" src="js/auth.js"></script> -->
+<script type="module" src="js/login.js"></script>
+<script src="js/modalDialog.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>

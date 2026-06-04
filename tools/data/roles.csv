@@ -1,0 +1,7 @@
+﻿code;description;active;sortOrder
+StUsr;Běžný uživatel/ka;true;10
+Mngr1;Manager/ka 1;true;20
+Mngr2;Manager/ka 2;true;30
+Mngr3;Manager/ka 3;true;40
+Mngr4;Manager/ka 4;true;50
+Admin;Admin;true;60

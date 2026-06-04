@@ -1,0 +1,5 @@
+﻿code;description;active;sortOrder;deptCode
+BrthC;Porodní centrum;true;10;ApoBr
+Brth2;2. porodní sál;true;20;ApoBr
+BrthA;Ambulance;true;30;ApoBr
+BrthP;PAC - poporodní JIP;true;40;ApoBr
