@@ -114,34 +114,48 @@ async function fRegister() {
         }
 
         const userCredential = await createUserWithEmailAndPassword(
-            auth,
-            sEmail,
-            sPassword
-        );
+    auth,
+    sEmail,
+    sPassword
+);
 
-        const user = userCredential.user;
+    const user = userCredential.user;
 
-        await updateDoc(
-            doc(db, "employees", employeeDoc.id),
-            {
-                firebase_uid: user.uid,
-                last_login: serverTimestamp()
-            }
-        );
+    // await updateDoc(
+    //     doc(db, "employees", employeeDoc.id),
+    //     {
+    //         firebase_uid: user.uid,
+    //         last_login: serverTimestamp()
+    //     }
+    // );
 
-        localStorage.setItem("employeeDocId", employeeDoc.id);
+    auth.languageCode = "cs";
+    await sendEmailVerification(user, {
+        url: "https://denni-nocni.openeer.eu/login.html"
+    });
 
-        window.location.href = "profile.html";
+    alert("Ověřovací e-mail byl odeslán. Po ověření se prosím přihlaste.");
+    
+    await signOut(auth);
 
-    } catch (err) {
+    showMsg(
+        "success",
+        "Registrace proběhla úspěšně. Na e-mail jsme vám poslali ověřovací odkaz. Po ověření se prosím přihlaste."
+    );
 
-        console.error(err);
+    //localStorage.setItem("employeeDocId", employeeDoc.id);
 
-        showMsg(
-            "err",
-            fGetFirebaseErrorCz(err.code)
-        );
-    }
+    //window.location.href = "profile.html";
+
+} catch (err) {
+
+    console.error(err);
+
+    showMsg(
+        "err",
+        fGetFirebaseErrorCz(err.code)
+    );
+}
 }
 
 
