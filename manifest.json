@@ -1,0 +1,20 @@
+{
+  "name": "denní:noční",
+  "short_name": "d:n",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1565C0",
+  "icons": [
+    {
+      "src": "img/favicon_letter_192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "img/favicon_letter_512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
