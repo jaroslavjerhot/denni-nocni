@@ -131,7 +131,7 @@ async function fRegister() {
 
     auth.languageCode = "cs";
     await sendEmailVerification(user, {
-        url: "https://denni-nocni.openeer.eu/login.html"
+        url: "https://denni-nocni.openeer.eu/index.html"
     });
 
     alert("Ověřovací e-mail byl odeslán. Po ověření se prosím přihlaste.");
