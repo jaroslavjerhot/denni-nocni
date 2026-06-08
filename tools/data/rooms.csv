@@ -1,5 +1,5 @@
-﻿code;description;active;sortOrder;deptCode
-BrthC;Porodní centrum;true;10;ApoBr
-Brth2;2. porodní sál;true;20;ApoBr
-BrthA;Ambulance;true;30;ApoBr
-BrthP;PAC - poporodní JIP;true;40;ApoBr
+﻿code;description;active;sortOrder;deptCode;manager;mon_D;mon_N;tue_D;tue_N;wed_D;wed_N;thu_D;thu_N;fri_D;fri_N;sat_D;sat_N;sun_D;sun_N
+BrthC;Porodní centrum;true;10;ApoBr;2;7:00-19:00;19:00-7:00;7:00-19:00;19:00-7:00;7:00-19:00;19:00-7:00;7:00-19:00;19:00-7:00;7:00-19:00;19:00-7:00;7:00-19:00;19:00-7:00;7:00-19:00;19:00-7:00
+Brth2;2. porodní sál;true;20;ApoBr;2;7:00-19:00;19:00-7:00;7:00-19:00;19:00-7:00;7:00-19:00;19:00-7:00;7:00-19:00;19:00-7:00;7:00-19:00;19:00-7:00;7:00-19:00;19:00-7:00;7:00-19:00;19:00-7:00
+BrthA;Ambulance;true;30;ApoBr;2;;;;;;;7:00-16:30;;;;;;;
+BrthP;PACU;true;40;ApoBr;2;7:00-19:00;19:00-7:00;7:00-19:00;19:00-7:00;7:00-19:00;19:00-7:00;7:00-19:00;19:00-7:00;7:00-19:00;19:00-7:00;7:00-19:00;19:00-7:00;7:00-19:00;19:00-7:00

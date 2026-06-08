@@ -1,2 +1,6 @@
 tools/serviceAccountKey.json
+tools/*.*
 *.json
+*.url
+*.ai
+*.xls*

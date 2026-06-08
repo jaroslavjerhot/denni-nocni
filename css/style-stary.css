@@ -3,11 +3,6 @@
     --royal-green-dark: #022c22;
     --royal-green-light: #10b981;
     --gold: #d4af37;
-    --blue-green: #198ead;
-    --blue-light: #e0eaf7;
-    --blue-middle: #2a7cc4; 
-    --blue-dark: #082c75;
-    --blue-darker: #0c2b64;
 }
 
 html,
@@ -21,19 +16,15 @@ body {
 
     background:
         linear-gradient(
-            rgba(224,234,247,.80),
-            rgba(224,234,247,.88)
-        );
-        
+            rgba(2,44,34,.80),
+            rgba(2,44,34,.88)
+        ),
+        url("../img/bg_royal_green.jpg");
 
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
-}
-
-.c-blue-darker {
-    color: var(--blue-darker)  !important;
 }
 
 .page-container {
@@ -63,44 +54,19 @@ body {
 
 .form-control:focus,
 .form-select:focus {
-    border-color: var(--light-blue);
-    box-shadow: 0 0 0 .25rem rgba(224,234,247,.25);
+    border-color: var(--gold);
+    box-shadow: 0 0 0 .25rem rgba(212,175,55,.25);
 }
 
-.btn-blue-darker {
-    background: var(--blue-dark);
-    border-color: var(--blue-darker);
+.btn-royal {
+    background: var(--royal-green);
+    border-color: var(--royal-green);
     color: white;
 }
 
-.btn-blue-darker:hover {
-    background: var(--blue-darker);
-    border-color: var(--blue-darker);
-    color: white;
-}
-
-.btn-blue-no-border {
-    background: white;
-    border-color: white;
-    color: var(--blue-dark);
-
-}
-
-.btn-blue-no-border:hover {
-    background: white;
-    border-color: white;
-    color: var(--blue-darker);
-}
-
-.btn-blue-green-white {
-    background: white;
-    border-color: var(--blue-green);
-    color:var(--blue-dark);
-}
-
-.btn-blue-green-white:hover {
-    background: #187a9b;
-    border-color: #187a9b;
+.btn-royal:hover {
+    background: var(--royal-green-dark);
+    border-color: var(--royal-green-dark);
     color: white;
 }
 

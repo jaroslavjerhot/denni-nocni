@@ -6,4 +6,5 @@ DptNr;Staniční sestra;true;40
 Instr;Instrumentář/ka;true;50
 Midwf;Porodní asistentka;true;60
 Nurse;Sestra;true;70
-MedOt;Ostatní zdravotní personál;true;80
+MedOt;Ostatní zdravotnický personál;true;80
+Other;Ostatní;;90

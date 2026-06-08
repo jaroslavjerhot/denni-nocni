@@ -65,29 +65,29 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 
-fImportCollection(
-    "positions",
-    "positions.csv",
-    "code"
-)
+# fImportCollection(
+#     "positions",
+#     "positions.csv",
+#     "code"
+# )
 
-fImportCollection(
-    "departments",
-    "departments.csv",
-    "code"
-)
+# fImportCollection(
+#     "departments",
+#     "departments.csv",
+#     "code"
+# )
 
-fImportCollection(
-    "rooms",
-    "rooms.csv",
-    "code"
-)
+# fImportCollection(
+#     "rooms",
+#     "rooms.csv",
+#     "code"
+# )
 
-fImportCollection(
-    "roles",
-    "roles.csv",
-    "code"
-)
+# fImportCollection(
+#     "roles",
+#     "roles.csv",
+#     "code"
+# )
 
 
 fImportCollection(

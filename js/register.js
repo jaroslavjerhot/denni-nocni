@@ -3,7 +3,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/fireba
 
 import {
     getAuth,
-    createUserWithEmailAndPassword
+    createUserWithEmailAndPassword,
+    sendEmailVerification,
+    signOut,
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
 import {
@@ -144,7 +146,7 @@ async function fRegister() {
 
 
 function fGetFirebaseErrorCz(sCode) {
-
+    
     switch (sCode) {
 
         case "auth/email-already-in-use":
@@ -164,6 +166,6 @@ function fGetFirebaseErrorCz(sCode) {
             return "Nemáte oprávnění k této akci.";
 
         default:
-            return "Registrace se nezdařila.";
+            return sCode;
     }
 }
