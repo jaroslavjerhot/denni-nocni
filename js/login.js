@@ -67,6 +67,20 @@ async function fLogin() {
 
         const user = userCredential.user;
 
+        await user.reload();
+
+        if (!user.emailVerified) {
+alert(JSON.stringify(user));
+            await signOut(auth);
+
+            showMsg(
+                "err",
+                "Nejdříve ověřte svůj e-mail."
+            );
+
+            return;
+        }
+
         const qEmployees = query(
             collection(db, "employees"),
             where("firebase_uid", "==", user.uid)
@@ -152,6 +166,6 @@ function fGetFirebaseErrorCz(sCode) {
             return "Nemáte oprávnění k této akci.";
 
         default:
-            return "Přihlášení se nezdařilo.";
+            return sCode;
     }
 }

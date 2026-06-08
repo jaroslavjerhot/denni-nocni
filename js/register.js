@@ -1,11 +1,10 @@
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
 
 import {
     getAuth,
     createUserWithEmailAndPassword,
     sendEmailVerification,
-    signOut,
+    signOut
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
 import {
@@ -18,6 +17,7 @@ import {
     updateDoc,
     serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyBeTgy73Z4DCRb-vfQ6KxHNpknR2Vv0BtM",
@@ -32,6 +32,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+auth.languageCode = "cs";
+
 
 document
     .getElementById("btnRegister")
@@ -76,14 +79,9 @@ async function fRegister() {
 
     try {
 
-        const qEmployees = query(
-            collection(db, "employees"),
-            where("email", "==", sEmail)
-        );
+        const employeeDoc = await fFindEmployeeByEmail(sEmail);
 
-        const employeeSnapshot = await getDocs(qEmployees);
-
-        if (employeeSnapshot.empty) {
+        if (!employeeDoc) {
             showMsg(
                 "err",
                 "Tento e-mail není v seznamu povolených zaměstnanců."
@@ -91,7 +89,6 @@ async function fRegister() {
             return;
         }
 
-        const employeeDoc = employeeSnapshot.docs[0];
         const employeeData = employeeDoc.data();
 
         if (employeeData.active !== true) {
@@ -108,63 +105,99 @@ async function fRegister() {
         ) {
             showMsg(
                 "err",
-                "Tento uživatel je již registrován. Použijte prosím přihlášení."
+                "Tento uživatel už má vytvořený účet. Pokud e-mail ještě není ověřený, zkontrolujte prosím poštu nebo použijte přihlášení."
             );
             return;
         }
 
         const userCredential = await createUserWithEmailAndPassword(
-    auth,
-    sEmail,
-    sPassword
-);
+            auth,
+            sEmail,
+            sPassword
+        );
 
-    const user = userCredential.user;
+        const user = userCredential.user;
 
-    // await updateDoc(
-    //     doc(db, "employees", employeeDoc.id),
-    //     {
-    //         firebase_uid: user.uid,
-    //         last_login: serverTimestamp()
-    //     }
-    // );
+        try {
 
-    auth.languageCode = "cs";
-    await sendEmailVerification(user, {
-        url: "https://denni-nocni.openeer.eu/index.html"
-    });
+            await sendEmailVerification(user, {
+                url: "https://denni-nocni.openeer.eu/login.html"
+            });
 
-    alert("Ověřovací e-mail byl odeslán. Po ověření se prosím přihlaste.");
-    
-    await signOut(auth);
+        } catch (errVerification) {
 
-    showMsg(
-        "success",
-        "Registrace proběhla úspěšně. Na e-mail jsme vám poslali ověřovací odkaz. Po ověření se prosím přihlaste."
-    );
+            console.error(errVerification);
 
-    //localStorage.setItem("employeeDocId", employeeDoc.id);
+            await signOut(auth);
 
-    //window.location.href = "profile.html";
+            showMsg(
+                "err",
+                "Účet byl vytvořen, ale nepodařilo se odeslat ověřovací e-mail. Kontaktujte prosím administrátora."
+            );
 
-} catch (err) {
+            return;
+        }
 
-    console.error(err);
+        await updateDoc(
+            doc(db, "employees", employeeDoc.id),
+            {
+                firebase_uid: user.uid,
+                email_verified: false,
+                verification_sent_at: serverTimestamp(),
+                last_login: null
+            }
+        );
 
-    showMsg(
-        "err",
-        fGetFirebaseErrorCz(err.code)
-    );
+        await signOut(auth);
+
+        showMsg(
+            "success",
+            "Registrace proběhla úspěšně. Na e-mail jsme poslali ověřovací odkaz. Po ověření se prosím přihlaste."
+        );
+
+        window.location.href = "index.html";
+    } catch (err) {
+
+        console.error(err);
+
+        showMsg(
+            "err",
+            fGetFirebaseErrorCz(err.code)
+        );
+    }
 }
+
+
+async function fFindEmployeeByEmail(sEmail) {
+
+    const qEmployees = query(
+        collection(db, "employees"),
+        where("email", "==", sEmail)
+    );
+
+    try {
+        const employeeSnapshot = await getDocs(qEmployees);
+
+        if (employeeSnapshot.empty) {
+            return null;
+        }
+
+        return employeeSnapshot.docs[0];
+    } catch (err) {
+        alert('ERR');
+        showMsg("err", err.message);
+        console.error(err);
+        return null;
+    }
 }
 
 
 function fGetFirebaseErrorCz(sCode) {
-    
+
     switch (sCode) {
 
         case "auth/email-already-in-use":
-            return "Tento e-mail je již ve Firebase registrován.";
+            return "Tento e-mail je již registrován. Pokud účet ještě není ověřený, zkontrolujte prosím poštu nebo použijte přihlášení.";
 
         case "auth/invalid-email":
             return "E-mail má neplatný formát.";
@@ -174,6 +207,9 @@ function fGetFirebaseErrorCz(sCode) {
 
         case "auth/missing-password":
             return "Zadejte heslo.";
+
+        case "auth/network-request-failed":
+            return "Nepodařilo se připojit k serveru. Zkontrolujte prosím internetové připojení.";
 
         case "permission-denied":
         case "firestore/permission-denied":
