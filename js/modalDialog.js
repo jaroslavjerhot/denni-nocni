@@ -1,10 +1,13 @@
-function showMsg(modalType, text) {
+function createModal(sModalTitle, text) {
     const modalTitle = document.getElementById("modalTitle");
     const modalText = document.getElementById("modalText");
+    // of modalText is not text, use JSON.stringify
+    
+    if (typeof text !== "string") {
+        text = JSON.stringify(text, null, 2);
+    }
 
-
-
-    switch (modalType) {
+    switch (sModalTitle) {
 
         case "err":
           modalTitle.innerText = "Chyba";
@@ -29,7 +32,7 @@ function showMsg(modalType, text) {
             break;
 
         default:
-            modalTitle.innerText = "Informace";
+            modalTitle.innerText = sModalTitle ||"Informace";
             modalHeader.className = "modal-header bg-secondary text-white";
 
     }
@@ -40,7 +43,8 @@ function showMsg(modalType, text) {
             document.getElementById("genericModal")
         );
 
-    modal.show();
+    //modal.show();
+    return modal;
 }
 
 function hideMsg() {
@@ -50,4 +54,31 @@ function hideMsg() {
   if (bootstrapModal) {
     bootstrapModal.hide();
   }
+}
+
+function showMsg(sModalTitle, sText) {
+
+    return new Promise((resolve) => {
+
+        const modalElement =
+            document.getElementById("genericModal");
+
+        const modal = createModal(sModalTitle, sText);
+
+
+        modalElement.addEventListener(
+            "hidden.bs.modal",
+            function fHandler() {
+
+                modalElement.removeEventListener(
+                    "hidden.bs.modal",
+                    fHandler
+                );
+
+                resolve();
+            }
+        );
+
+        modal.show();
+    });
 }

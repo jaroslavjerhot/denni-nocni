@@ -1,83 +1,47 @@
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-
 import {
-    getAuth,
-    signInWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-
-import {
-    getFirestore,
-    collection,
+    auth,
+    db,
+    signInWithEmailAndPassword,
     query,
+    collection,
     where,
     getDocs,
-    doc,
-    updateDoc,
-    serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBeTgy73Z4DCRb-vfQ6KxHNpknR2Vv0BtM",
-  authDomain: "my-auth-app-cfd14.firebaseapp.com",
-  projectId: "my-auth-app-cfd14",
-  storageBucket: "my-auth-app-cfd14.firebasestorage.app",
-  messagingSenderId: "586087979734",
-  appId: "1:586087979734:web:5a8d95dd9c75af63140777",
-  measurementId: "G-68C3B1BZB1"
-};
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-document
-    .getElementById("btnLogin")
-    .addEventListener("click", fLogin);
-
+    signOut
+} from "./firebase.js";
 
 async function fLogin() {
+    
+    const sEmail = document.getElementById("email").value.trim().toLowerCase();
 
-    const sEmail = document
-        .getElementById("email")
-        .value
-        .trim()
-        .toLowerCase();
-
-    const sPassword = document
-        .getElementById("password")
-        .value;
+    const sPassword = document.getElementById("password").value;
 
     if (!sEmail) {
-        showMsg("err", "Zadejte e-mail.");
+        await showMsg("err", "Zadejte e-mail.");
         return;
     }
 
     if (!sPassword) {
-        showMsg("err", "Zadejte heslo.");
+        await showMsg("err", "Zadejte heslo.");
         return;
     }
 
     try {
-
+        // sign in with email and password and get user credential
+        
         const userCredential = await signInWithEmailAndPassword(
-            auth,
-            sEmail,
-            sPassword
-        );
-
+            auth, sEmail, sPassword);
+        
         const user = userCredential.user;
-
+            
         await user.reload();
 
+        //await showMsg("User", user);
+        
+        
         if (!user.emailVerified) {
-alert(JSON.stringify(user));
+            // not yet verified - sign out and show message
             await signOut(auth);
-
-            showMsg(
-                "err",
-                "Nejdříve ověřte svůj e-mail."
-            );
-
+            await showMsg("err", "Nejdříve ověřte svůj e-mail. Na e-mail jsme vám poslali ověřovací odkaz.");
             return;
         }
 
@@ -86,59 +50,69 @@ alert(JSON.stringify(user));
             where("firebase_uid", "==", user.uid)
         );
 
+        
         const employeeSnapshot = await getDocs(qEmployees);
 
         if (employeeSnapshot.empty) {
-            showMsg(
-                "err",
-                "Uživatel byl přihlášen, ale nebyl nalezen v seznamu zaměstnanců."
-            );
+            await showMsg("err","Váš účet nebyl nalezen v seznamu zaměstnanců.");      
             return;
         }
 
         const employeeDoc = employeeSnapshot.docs[0];
-        const employeeData = employeeDoc.data();
+        const dctEmpl = employeeDoc.data();
 
-        if (employeeData.active !== true) {
-            showMsg(
-                "err",
-                "Váš účet není aktivní. Kontaktujte prosím administrátora."
-            );
+        if (!dctEmpl.profileSaved) {
+            await showMsg("warn","Než budete moci začít vyplňovat své požadavky, musíte nejdříve doplnit svůj profil. Klikněte na tlačítko 'OK' a vyplňte požadované informace.");
+            await fShowPage("profile", dctEmpl);
             return;
         }
 
-        await updateDoc(
-            doc(db, "employees", employeeDoc.id),
-            {
-                last_login: serverTimestamp()
-            }
-        );
-
-        localStorage.setItem("employeeDocId", employeeDoc.id);
-        localStorage.setItem("employeeName", employeeData.name || "");
-        localStorage.setItem("employeeRole", employeeData.role || "");
-        localStorage.setItem("employeeDepartment", employeeData.department || "");
-
-        if (
-            employeeData.role === "admin"
-            || employeeData.role === "manager"
-        ) {
-            window.location.href = "requests.html";
-        } else {
-            window.location.href = "requests.html";
+        await showMsg("dctEmpl", dctEmpl);
+        
+        if (dctEmpl.active !== true) {
+            await showMsg("err", "Váš účet není aktivní. Kontaktujte prosím administrátora.");
+            return;
         }
+
+        // await updateDoc(
+        //     doc(db, "employees", employeeDoc.id),
+        //     {
+        //         last_login: serverTimestamp()
+        //     }
+        // );
+
+        // get employee data and store in localSt
+
+        // localStorage.setItem("employeeDocId", employeeDoc.id);
+        // localStorage.setItem("employeeName", dctEmpl.name || "");
+        // localStorage.setItem("employeeRole", dctEmpl.role || "");
+        // localStorage.setItem("employeeDepartment", dctEmpl.department || "");
+
+
+
+        // if (
+        //     dctEmpl.role === "admin"
+        //     || dctEmpl.role === "manager"
+        // ) {
+        //     window.location.href = "requests.html";
+        // } else {
+        //     window.location.href = "requests.html";
+        // }
+
+        await fShowPage("requests", dctEmpl);
 
     } catch (err) {
 
         console.error(err);
 
-        showMsg(
+        await showMsg(
             "err",
             fGetFirebaseErrorCz(err.code)
         );
     }
+    
 }
-
+window.fLogin = fLogin;
 
 function fGetFirebaseErrorCz(sCode) {
 

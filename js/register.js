@@ -1,37 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-
-import {
-    getAuth,
-    createUserWithEmailAndPassword,
-    sendEmailVerification,
-    signOut
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-
-import {
-    getFirestore,
-    collection,
-    query,
-    where,
-    getDocs,
-    doc,
-    updateDoc,
-    serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBeTgy73Z4DCRb-vfQ6KxHNpknR2Vv0BtM",
-  authDomain: "my-auth-app-cfd14.firebaseapp.com",
-  projectId: "my-auth-app-cfd14",
-  storageBucket: "my-auth-app-cfd14.firebasestorage.app",
-  messagingSenderId: "586087979734",
-  appId: "1:586087979734:web:5a8d95dd9c75af63140777",
-  measurementId: "G-68C3B1BZB1"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+import {app, auth, db} from "./firebase.js";
 
 auth.languageCode = "cs";
 
@@ -43,19 +10,11 @@ document
 
 async function fRegister() {
 
-    const sEmail = document
-        .getElementById("email")
-        .value
-        .trim()
-        .toLowerCase();
+    const sEmail = document.getElementById("email").value.trim().toLowerCase();
 
-    const sPassword = document
-        .getElementById("password")
-        .value;
+    const sPassword = document.getElementById("password").value;
 
-    const sPassword2 = document
-        .getElementById("password2")
-        .value;
+    const sPassword2 = document.getElementById("password2").value;
 
     if (!sEmail) {
         showMsg("err", "Zadejte e-mail.");
@@ -121,7 +80,7 @@ async function fRegister() {
         try {
 
             await sendEmailVerification(user, {
-                url: "https://denni-nocni.openeer.eu/login.html"
+                url: "https://denni-nocni.openeer.eu/index.html"
             });
 
         } catch (errVerification) {
@@ -138,15 +97,15 @@ async function fRegister() {
             return;
         }
 
-        await updateDoc(
-            doc(db, "employees", employeeDoc.id),
-            {
-                firebase_uid: user.uid,
-                email_verified: false,
-                verification_sent_at: serverTimestamp(),
-                last_login: null
-            }
-        );
+        // await updateDoc(
+        //     doc(db, "employees", employeeDoc.id),
+        //     {
+        //         firebase_uid: user.uid,
+        //         email_verified: false,
+        //         verification_sent_at: serverTimestamp(),
+        //         last_login: null
+        //     }
+        // );
 
         await signOut(auth);
 
