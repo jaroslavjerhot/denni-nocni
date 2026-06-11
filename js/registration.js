@@ -1,11 +1,19 @@
-import {app, auth, db} from "./firebase.js";
+import {
+    auth,
+    db,
+    signInWithEmailAndPassword,
+    signOut,
+    createUserWithEmailAndPassword,
+    sendEmailVerification,
+    query,
+    collection,
+    where,
+    getDocs,
+    fGetFirebaseErrorCz,
+    appState,
+} from "./firebase.js";
 
 auth.languageCode = "cs";
-
-
-document
-    .getElementById("btnRegister")
-    .addEventListener("click", fRegister);
 
 
 async function fRegister() {
@@ -78,9 +86,10 @@ async function fRegister() {
         const user = userCredential.user;
 
         try {
-
+            alert("Sending verification email..., back: " + location.origin);
             await sendEmailVerification(user, {
-                url: "https://denni-nocni.openeer.eu/index.html"
+                url: location.origin 
+                //url: "https://denni-nocni.openeer.eu/index.html"
             });
 
         } catch (errVerification) {
@@ -114,18 +123,21 @@ async function fRegister() {
             "Registrace proběhla úspěšně. Na e-mail jsme poslali ověřovací odkaz. Po ověření se prosím přihlaste."
         );
 
-        window.location.href = "index.html";
+        fShowLogin();
     } catch (err) {
 
         console.error(err);
 
-        showMsg(
-            "err",
-            fGetFirebaseErrorCz(err.code)
-        );
+        showMsg("err", fGetFirebaseErrorCz(err.code));
     }
 }
+window.fRegister = fRegister;
 
+async function fShowLogin() {
+    //alert("fShowLogin");
+    await fShowPage("login", appState.dctEmpl);
+}
+window.fShowLogin = fShowLogin;
 
 async function fFindEmployeeByEmail(sEmail) {
 
@@ -150,31 +162,3 @@ async function fFindEmployeeByEmail(sEmail) {
     }
 }
 
-
-function fGetFirebaseErrorCz(sCode) {
-
-    switch (sCode) {
-
-        case "auth/email-already-in-use":
-            return "Tento e-mail je již registrován. Pokud účet ještě není ověřený, zkontrolujte prosím poštu nebo použijte přihlášení.";
-
-        case "auth/invalid-email":
-            return "E-mail má neplatný formát.";
-
-        case "auth/weak-password":
-            return "Heslo je příliš slabé.";
-
-        case "auth/missing-password":
-            return "Zadejte heslo.";
-
-        case "auth/network-request-failed":
-            return "Nepodařilo se připojit k serveru. Zkontrolujte prosím internetové připojení.";
-
-        case "permission-denied":
-        case "firestore/permission-denied":
-            return "Nemáte oprávnění k této akci.";
-
-        default:
-            return sCode;
-    }
-}

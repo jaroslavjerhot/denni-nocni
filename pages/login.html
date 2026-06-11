@@ -20,10 +20,11 @@
                     Přihlášení
                 </h2>
                 
-              <input id="email" class="form-control mb-3 c-blue-darker" placeholder="Email" value="jaroslav.jerhot@centrum.cz">
+              <input id="email" class="form-control mb-3 c-blue-darker" data-field="email" placeholder="Email"
+              >
 
               <div class="input-group mb-3">
-                <input id="password" class="form-control c-blue-darker" type="password" placeholder="Heslo" value="test1234">
+                <input id="password" class="form-control c-blue-darker" data-field="password" type="password" placeholder="Heslo" value="test1234">
                 <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('password', this)">
                             👁
                         </button>
@@ -37,9 +38,16 @@
                 Přihlásit
               </button>
 
-              <a class="btn btn-blue-green-white w-100 mb-2" href="register.html">
+              <!-- <a class="btn btn-blue-green-white w-100 mb-2" href="register.html">
                 Registrovat se<br>(pouze předregistrovaní uživatelé)
-              </a>
+              </a> -->
+
+              <button
+                      type="button" class="btn btn-blue-green-white w-100 mb-2" data-action="fShowRegistration">
+                      Registrovat se<br>(pouze předregistrovaní uživatelé)
+              </button>
+
+
 
               <!-- <button class="btn btn-gold w-100 mb-2" onclick="googleLogin()">
                 Pokračovat s Google
@@ -64,10 +72,3 @@
 
 </div>
   
-
-<!-- <script type="module" src="../js/login.js"></script>
-<script src="./../js/modalDialog.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script> -->
-
-</body>

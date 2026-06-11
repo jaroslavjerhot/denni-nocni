@@ -51,16 +51,16 @@
                   </h6>
 
                 <h2 class="c-blue-darker text-center mb-4">
-                    Registrace
+                    Registrace pro předregistrované uživatele
                 </h2>
                 
-                <h6 class="text-center mb-4 italic c-blue-darker">
+                <!-- <h6 class="text-center mb-4 italic c-blue-darker">
                     Pokud jste předregistrovaný uživatel, můžete si zde nastavit nebo změnit své heslo.
                     <br>
                     Po zadání emailu a hesla vám přijde odkaz pro potvrzení registrace na váš email. Pokud neobdržíte email, zkontrolujte složku spamu nebo se obraťte na administrátora.
                     <br>
                     v 3.6.2026 12.12
-                </h6>
+                </h6> -->
 
                 <!-- EMAIL -->
                 <div class="section-title c-blue-darker">Email (pouze předregistrovaný)</div>
@@ -69,7 +69,8 @@
                     <div class="col-12">
 
                         <!-- <label class="form-label">Email</label> -->
-                        <input id="email" type="email" class="form-control mb-3 c-blue-darker col-md-12" value="jaroslav.jerhot@centrum.cz">
+                        <input id="email" type="email" class="form-control mb-3 c-blue-darker col-md-12"
+                        data-field="email">
                         <!-- <input id="email" type="email" class="form-control"> -->
                         <!-- <div class="form-text">Email musí být ve formátu @vfn.cz.</div> -->
 
@@ -87,7 +88,7 @@
 
                         <div class="input-group">
                         <input id="password" type="password" class="form-control c-blue-darker" placeholder="Heslo"
-                             value="test1234">
+                             data-field="password" value="test1234">
 
                         <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('password', this)">
                             👁
@@ -99,7 +100,7 @@
                          <!-- <label class="form-label">Heslo znovu</label> -->
                     <div class="input-group">
                         <input id="password2" type="password" class="form-control c-blue-darker" placeholder="Heslo znovu"
-                             value="test1234">
+                             data-field="password2" value="test1234">
 
                         <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('password2', this)">
                             👁
@@ -115,16 +116,17 @@
                     <div class="col-12 col-md-6">
 
                         <button
-                            type="button" class="btn btn-blue-darker w-100" id="btnRegister">
+                            type="button" class="btn btn-blue-darker w-100" id="btnRegister" data-action="fRegister">
                             Dokončit registraci
                         </button>
 
                     </div>
 
                     <div class="col-12 col-md-6">
-                        <a href="index.html" class="btn btn-outline-success w-100">
+                        <button
+                            type="button" class="btn btn-blue-green-white w-100 mb-2" data-action="fShowLogin">
                             Zpět na přihlášení
-                        </a>
+                        </button>
 
                     </div>
 

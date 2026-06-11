@@ -33,7 +33,7 @@ function createModal(sModalTitle, text) {
 
         default:
             modalTitle.innerText = sModalTitle ||"Informace";
-            modalHeader.className = "modal-header bg-secondary text-white";
+            modalHeader.className = "modal-header c-blue-darker text-white";
 
     }
     modalText.innerText = text;

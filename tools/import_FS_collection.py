@@ -44,7 +44,10 @@ def fImportCollection(sCollectionName, sCsvFileName, sIdColumn):
 
     for _, row in df.iterrows():
         # add zero padding to the document id if needed
-        sDocumentId = str(row[sIdColumn]).strip().zfill(5)
+        if isinstance(row[sIdColumn], int):
+            sDocumentId = str(row[sIdColumn]).strip().zfill(5)
+        else:
+            sDocumentId = str(row[sIdColumn]).strip()
 
         dctData = {}
 
@@ -53,6 +56,9 @@ def fImportCollection(sCollectionName, sCsvFileName, sIdColumn):
                 continue
 
             dctData[sColumn] = fConvertValue(row[sColumn])
+            
+        if sCollectionName == "employees":
+            dctData["description"] = f"{dctData.get('surname', '')} {dctData.get('givenname', '')}".strip()
 
         db.collection(sCollectionName).document(sDocumentId).set(dctData)
 
@@ -65,29 +71,29 @@ firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 
-# fImportCollection(
-#     "positions",
-#     "positions.csv",
-#     "code"
-# )
+fImportCollection(
+    "positions",
+    "positions.csv",
+    "code"
+)
 
-# fImportCollection(
-#     "departments",
-#     "departments.csv",
-#     "code"
-# )
+fImportCollection(
+    "departments",
+    "departments.csv",
+    "code"
+)
 
-# fImportCollection(
-#     "rooms",
-#     "rooms.csv",
-#     "code"
-# )
+fImportCollection(
+    "spots",
+    "spots.csv",
+    "code"
+)
 
-# fImportCollection(
-#     "roles",
-#     "roles.csv",
-#     "code"
-# )
+fImportCollection(
+    "roles",
+    "roles.csv",
+    "code"
+)
 
 
 fImportCollection(

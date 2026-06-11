@@ -2,12 +2,20 @@ import {
     auth,
     db,
     signInWithEmailAndPassword,
+    sendPasswordResetEmail,
     query,
     collection,
     where,
     getDocs,
-    signOut
+    signOut,
+    fGetFirebaseErrorCz,
+    appState,
 } from "./firebase.js";
+
+
+
+
+
 
 async function fLogin() {
     
@@ -47,7 +55,7 @@ async function fLogin() {
 
         const qEmployees = query(
             collection(db, "employees"),
-            where("firebase_uid", "==", user.uid)
+            where("email", "==", user.email)
         );
 
         
@@ -58,88 +66,84 @@ async function fLogin() {
             return;
         }
 
+
         const employeeDoc = employeeSnapshot.docs[0];
-        const dctEmpl = employeeDoc.data();
-
-        if (!dctEmpl.profileSaved) {
-            await showMsg("warn","Než budete moci začít vyplňovat své požadavky, musíte nejdříve doplnit svůj profil. Klikněte na tlačítko 'OK' a vyplňte požadované informace.");
-            await fShowPage("profile", dctEmpl);
-            return;
-        }
-
-        await showMsg("dctEmpl", dctEmpl);
-        
-        if (dctEmpl.active !== true) {
+        appState.dctEmpl = employeeDoc.data();
+        //alert("appState.dctEmpl: " + JSON.stringify(appState.dctEmpl));
+       
+        if (appState.dctEmpl.active !== true) {
             await showMsg("err", "Váš účet není aktivní. Kontaktujte prosím administrátora.");
             return;
         }
 
-        // await updateDoc(
-        //     doc(db, "employees", employeeDoc.id),
-        //     {
-        //         last_login: serverTimestamp()
-        //     }
-        // );
+        // await showMsg("success","Přihlášení bylo úspěšné. Vítejte, " + (appState.dctEmpl.surname || "neznámý uživateli") + "!");
+        if (!appState.dctEmpl.profileSaved) {
+            //await showMsg("warn","Než budete moci začít vyplňovat své požadavky, musíte nejdříve doplnit svůj profil. Jinak nebude možné zpracovat vaše požadavky.\nKlikněte na tlačítko 'OK' a vyplňte požadované informace.");
+            appState.dctEmpl.name = ((appState.dctEmpl.prefix ? appState.dctEmpl.prefix + " " : "") + (appState.dctEmpl.givenname || "") + " " + (appState.dctEmpl.surname || "") + (appState.dctEmpl.suffix ? ", " + appState.dctEmpl.suffix : "")).trim();
+            appState.dctEmpl.phone = String(appState.dctEmpl.phone ?? "");
+            //await showMsg("appState.dctEmpl", appState.dctEmpl);
+            const dctTitle = {'profileTitle': "Doplňte a uložte svůj profil"};
+            const dctSelects= {}
+            appState.dctDepartments = await fGetCodeDescriptionDict("departments");
+            appState.dctSpots = await fGetCodeDescriptionDict("spots");
+            appState.dctPositions = await fGetCodeDescriptionDict("positions");
+            appState.dctEmployees = await fGetCodeDescriptionDict("employees");
+            // dctSelects['department'] = appState.dctDepartments;
+            // dctSelects['pref_spot'] = appState.dctSpots;
+            // dctSelects['pos1'] = appState.dctPositions;
+            // dctSelects['pos2'] = appState.dctPositions;
+            // dctSelects['favorite1'] = appState.dctEmployees;
+            // dctSelects['favorite2'] = appState.dctEmployees;
+            // dctSelects['favorite3'] = appState.dctEmployees;
+            // dctSelects['favorite4'] = appState.dctEmployees;
+            // dctSelects['unfavorite1'] = appState.dctEmployees;
+            // dctSelects['unfavorite2'] = appState.dctEmployees;
+            // dctSelects['unfavorite3'] = appState.dctEmployees;
+            // dctSelects['unfavorite4'] = appState.dctEmployees;
 
-        // get employee data and store in localSt
-
-        // localStorage.setItem("employeeDocId", employeeDoc.id);
-        // localStorage.setItem("employeeName", dctEmpl.name || "");
-        // localStorage.setItem("employeeRole", dctEmpl.role || "");
-        // localStorage.setItem("employeeDepartment", dctEmpl.department || "");
-
-
-
-        // if (
-        //     dctEmpl.role === "admin"
-        //     || dctEmpl.role === "manager"
-        // ) {
-        //     window.location.href = "requests.html";
-        // } else {
-        //     window.location.href = "requests.html";
-        // }
-
-        await fShowPage("requests", dctEmpl);
+            //await showMsg("dctSelects", dctSelects);
+            //alert("appState.dctDepartments: " + JSON.stringify(appState.dctDepartments, null, 2));
+            //alert("appState.dctSpots: " + JSON.stringify(appState.dctSpots, null, 2));
+            //alert("appState.dctEmployees: " + JSON.stringify(appState.dctEmployees, null, 2));
+            // const dctSelects= {
+            await fShowPage("profile", {...dctTitle, ...appState.dctEmpl, ...appState});
+            // await fFillSelect(document, "department", appState.dctDepartments, "Vyberte oddělení...");
+            // await fFillSelect(document, "pref_spot", appState.dctSpots, "Vyberte preferované místo...");
+            // await fFillSelect(document, "pos1", appState.dctPositions, "Vyberte první pozici...");
+            
+            
+            return;
+        }
 
     } catch (err) {
-
-        console.error(err);
-
-        await showMsg(
-            "err",
-            fGetFirebaseErrorCz(err.code)
-        );
+        //console.error(err);
+        showMsg("err", fGetFirebaseErrorCz(err.code));
     }
     
 }
 window.fLogin = fLogin;
 
-function fGetFirebaseErrorCz(sCode) {
+function fShowRegistration() {
+    const dct = {email: document.getElementById("email").value.trim().toLowerCase()};
+    fShowPage("registration", dct);
+}
+window.fShowRegistration = fShowRegistration;
 
-    switch (sCode) {
-
-        case "auth/invalid-email":
-            return "E-mail má neplatný formát.";
-
-        case "auth/user-disabled":
-            return "Tento účet byl zakázán.";
-
-        case "auth/user-not-found":
-        case "auth/wrong-password":
-        case "auth/invalid-credential":
-            return "Nesprávný e-mail nebo heslo.";
-
-        case "auth/missing-password":
-            return "Zadejte heslo.";
-
-        case "auth/too-many-requests":
-            return "Příliš mnoho pokusů o přihlášení. Zkuste to prosím později.";
-
-        case "permission-denied":
-        case "firestore/permission-denied":
-            return "Nemáte oprávnění k této akci.";
-
-        default:
-            return sCode;
+async function fResetPassword() {
+    alert("fResetPassword");
+    const sEmail = document.getElementById("email").value.trim().toLowerCase();
+    if (!sEmail) {
+        showMsg("warn", "Zadejte e-mail pro reset hesla.");
+        return;
+    }
+    try {
+        await sendPasswordResetEmail(auth, sEmail, {
+            url: window.location.origin
+        });
+        showMsg("succ", "Na zadaný e-mail byl odeslán odkaz pro reset hesla.");
+    } catch (err) {
+        console.error(err);
+        showMsg("err", fGetFirebaseErrorCz(err.code));
     }
 }
+window.fResetPassword = fResetPassword;

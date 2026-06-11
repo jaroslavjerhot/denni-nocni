@@ -1,24 +1,3 @@
-function fShowPage(sPageId, dct = {}) {
-
-    document
-        .querySelectorAll(".app-page")
-        .forEach(function(page) {
-            page.classList.add("d-none");
-        });
-
-    const page = document.getElementById(sPageId);
-
-    if (!page) {
-        console.error("Page not found:", sPageId);
-        return;
-    }
-
-    fFillPage(page, dct);
-
-    page.classList.remove("d-none");
-}
-
-
 function fFillPage(page, dct) {
 
     page

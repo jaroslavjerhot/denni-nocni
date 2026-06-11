@@ -1,10 +1,11 @@
-﻿code;description;active;sortOrder
-PrDoc;Primář/ka;true;10
-Docto;Lékař/ka;true;20
-HghNr;Vrchní sestra;true;30
-DptNr;Staniční sestra;true;40
-Instr;Instrumentář/ka;true;50
-Midwf;Porodní asistentka;true;60
-Nurse;Sestra;true;70
-MedOt;Ostatní zdravotnický personál;true;80
-Other;Ostatní;;90
+﻿code;description;active;sortOrder;department
+PrDoc;Primář/ka;true;10;
+Docto;Lékař/ka;true;20;
+HghNr;Vrchní sestra;true;30;
+DptNr;Staniční sestra;true;40;ApoBr
+Instr;Instrumentář/ka;true;50;ApoBr
+Midwf;Porodní asistentka;true;60;ApoBr
+Nurse;Sestra;true;70;
+MedOt;Ostatní zdravotnický personál;true;80;
+Other;Ostatní;true;90;ApoBr
+Admin;Admin;true;100;
