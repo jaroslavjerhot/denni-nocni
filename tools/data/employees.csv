@@ -1,4 +1,4 @@
-﻿employeeId;email;sex;prefix;givenname;surname;suffix;shortname;phone;role;pos;pos2;department;pref_spot;manager;favorite_1;favorite_2;favorite_3;favorite_4;unfavorite_1;unfavorite_2;unfavorite_3;unfavorite_4;active;contracted_hours_weekly;hours_balance_from_last_m;description;firebase_uid;created;last_login
+﻿code;email;sex;prefix;givenname;surname;suffix;shortname;phone;role;pos;pos2;department;pref_spot;manager;favorite_1;favorite_2;favorite_3;favorite_4;unfavorite_1;unfavorite_2;unfavorite_3;unfavorite_4;active;contracted_hours_weekly;hours_balance_from_last_m;description;firebase_uid;created;last_login
 1;kristyna.podhorcikova@vfn.cz;f;;Kristýna;Podhorčíková;Dis;Podho;605123456;StUsr;Midwf;Instr;ApoBr;BrthC;2;19;1;;;18;2;;;true;24;;;;;
 2;alzbeta.stanicni@vfn.cz;f;;Alžběta;Staniční;Dis;Stani;605123457;Mngr;DptNr;Midwf;ApoBr;BrthC;2;20;2;;;19;3;;;true;40;;;;;
 3;klara.instrumentarka@vfn.cz;f;Mgr.;Klára;Instrumentářka;;Instr;605123458;StUsr;Instr;;ApoBr;BrthC;2;11;13;;;10;14;;;true;32;5;;;;
@@ -23,3 +23,5 @@
 22;jaroslav.jerhot@centrum.cz;m;Mgr.;Jaroslav;Jerhot-Mngr;MBA;Jarda;605470175;Mngr;Other;;ApoBr;;;1;;;;2;;;;true;40;;;;;
 23;jaroslav.jerhot@email.cz;m;Mgr.;Jaroslav;Jerhot-Dpty;MBA;Jarda;605470175;Dpty;Other;;ApoBr;;;1;;;;2;;;;true;40;;;;;
 24;jjerhot@hotmail.com;m;Mgr.;Jaroslav;Jerhot-StUsr;MBA;Jarda;605470175;StUsr;Other;;ApoBr;;;1;;;;2;;;;true;40;;;;;
+25;jan.testD@testC.com;;;Jan;Test;;;;;Other;;TestC;;;26;;;;;;;;;;;;;;
+26;pavel.testD@testC.com;;;Pavel;Test;;;;;Other;;TestC;;;25;;;;;;;;;;;;;;

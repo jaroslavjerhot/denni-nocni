@@ -10,29 +10,29 @@ function createModal(sModalTitle, text) {
     switch (sModalTitle) {
 
         case "err":
-          modalTitle.innerText = "Chyba";
+          modalTitle.innerText = ":((";
           modalHeader.className ="modal-header bg-danger text-white";
             break;
 
         case "succ":
-            modalTitle.innerText = "Úspěch";
+            modalTitle.innerText = ":))";
             modalHeader.className = "modal-header bg-success text-white";
             break;
 
         case "warn":
-            modalTitle.innerText = "Upozornění";
+            modalTitle.innerText = "!!!";
             modalHeader.className = "modal-header bg-warning text-white";
             break;
 
         case "wait":
-            modalTitle.innerText = "Čekejte";
+            modalTitle.innerText = ":O";
             modalHeader.className = "modal-header bg-primary text-white";
             const modalClose = document.getElementById("modalClose");
             modalClose.style.display = "none";
             break;
 
         default:
-            modalTitle.innerText = sModalTitle ||"Informace";
+            modalTitle.innerText = sModalTitle ||"Info";
             modalHeader.className = "modal-header c-blue-darker text-white";
 
     }

@@ -1,83 +1,118 @@
-import { auth } from "../firebase/config.js";
-import { callApi } from "./api.js";
-
 import {
-    onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    auth,
+    db,
+    signInWithEmailAndPassword,
+    sendPasswordResetEmail,
+    query,
+    collection,
+    where,
+    getDocs,
+    signOut,
+    fGetFirebaseErrorCz,
+    appState,
+} from "./firebase.js";
 
 const maxRequests = 10;
 
 const requestOptions = [
     ["", "-"],
-    ["want", "Want"],
-    ["cannot", "Cannot"],
-    ["holiday", "Holiday"]
+    ["wnt", "chci"],
+    ["cnt", "nemohu"],
+    ["hld", "dovolená"],
+    ["sck", "nemoc/očr"]
 ];
 
-let authReady = false;
 
-onAuthStateChanged(auth, user => {
-    if (!user) {
-        location.href = "index.html";
-        return;
+function fGetMonthAhead(iDays=0) {
+    const dt = new Date();
+    // today + iDays
+    if (iDays===0) {
+        iDays = new Date(dt.getFullYear(), dt.getMonth() + 1, 0).getDate();
     }
-
-    if (authReady) {
-        return;
-    }
-
-    authReady = true;
-
-    initMonthSelectors();
-    renderCalendar();
-});
-
-window.renderCalendar = renderCalendar;
-window.saveRequests = saveRequests;
-
-function initMonthSelectors() {
-    const now = new Date();
-    const currentMonth = now.getMonth() + 1;
-    const currentYear = now.getFullYear();
-
-    const monthNames = [
-        "January", "February", "March", "April",
-        "May", "June", "July", "August",
-        "September", "October", "November", "December"
-    ];
-
-    monthSelect.innerHTML = "";
-
-    monthNames.forEach((name, index) => {
-        const option = document.createElement("option");
-        option.value = index + 1;
-        option.textContent = name;
-
-        if (index + 1 === currentMonth) {
-            option.selected = true;
-        }
-
-        monthSelect.appendChild(option);
-    });
-
-    yearSelect.innerHTML = "";
-
-    for (let y = currentYear - 1; y <= currentYear + 2; y++) {
-        const option = document.createElement("option");
-        option.value = y;
-        option.textContent = y;
-
-        if (y === currentYear) {
-            option.selected = true;
-        }
-
-        yearSelect.appendChild(option);
-    }
+    dt.setDate(dt.getDate() + iDays);
+    
+    return dt.getFullYear() + "-" + String(dt.getMonth() + 1).padStart(2, "0");
 }
 
-function renderCalendar() {
-    const year = Number(yearSelect.value);
-    const month = Number(monthSelect.value);
+async function fInitRequestsPage() {
+    const pageRequests = document.getElementById("pageRequests");
+    const monthSelect = document.getElementById("requestMonth");
+
+    monthSelect.value = fGetMonthAhead();
+
+    fRenderCalendar();
+}
+window.fInitRequestsPage = fInitRequestsPage;
+
+// let authReady = false;
+
+
+
+// onAuthStateChanged(auth, user => {
+//     if (!user) {
+//         location.href = "index.html";
+//         return;
+//     }
+
+//     if (authReady) {
+//         return;
+//     }
+
+//     authReady = true;
+
+//     initMonthSelectors();
+//     fRenderCalendar();
+// });
+
+// window.saveRequests = saveRequests;
+
+// function initMonthSelectors() {
+//     const now = new Date();
+//     const currentMonth = now.getMonth() + 1;
+//     const currentYear = now.getFullYear();
+
+//     const monthNames = [
+//         "January", "February", "March", "April",
+//         "May", "June", "July", "August",
+//         "September", "October", "November", "December"
+//     ];
+
+//     monthSelect.innerHTML = "";
+
+//     monthNames.forEach((name, index) => {
+//         const option = document.createElement("option");
+//         option.value = index + 1;
+//         option.textContent = name;
+
+//         if (index + 1 === currentMonth) {
+//             option.selected = true;
+//         }
+
+//         monthSelect.appendChild(option);
+//     });
+
+//     yearSelect.innerHTML = "";
+
+//     for (let y = currentYear - 1; y <= currentYear + 2; y++) {
+//         const option = document.createElement("option");
+//         option.value = y;
+//         option.textContent = y;
+
+//         if (y === currentYear) {
+//             option.selected = true;
+//         }
+
+//         yearSelect.appendChild(option);
+//     }
+// }
+
+function fRenderCalendar() {
+    const monthSelect = document.getElementById("requestMonth");
+    const calendarBody = document.getElementById("calendarBody");
+    
+    const year = monthSelect.value.split("-")[0];
+    const month = Number(monthSelect.value.split("-")[1]);
+    
 
     const firstDate = new Date(year, month - 1, 1);
     const daysInMonth = new Date(year, month, 0).getDate();
@@ -90,11 +125,13 @@ function renderCalendar() {
 
     calendarBody.innerHTML = "";
 
+    //alert("fGetMonthAhead: " + fGetMonthAhead(20));
+    
     let day = 1;
 
     for (let week = 0; week < 6; week++) {
         const tr = document.createElement("tr");
-
+// ctreates 7 days in week on top of calendar
         for (let weekday = 1; weekday <= 7; weekday++) {
             const td = document.createElement("td");
 
@@ -138,16 +175,20 @@ function renderCalendar() {
         });
 }
 
+window.fRenderCalendar = fRenderCalendar;
+
+
 function createDayHtml(year, month, day) {
     const dateText =
         year + "-" +
         String(month).padStart(2, "0") + "-" +
         String(day).padStart(2, "0");
 
+    const dayInWeekCz = ["Ne", "Po", "Út", "St", "Čt", "Pá", "So", ][new Date(year, month - 1, day).getDay()];    
     return `
-        <div class="day-number">${day}</div>
+        <div class="day-number">${dayInWeekCz} ${day}.</div>
 
-        <div class="shift-label">Day</div>
+        <div class="shift-label">Denní</div>
         <select
             class="form-select form-select-sm mb-2 request-select"
             data-date="${dateText}"
@@ -155,7 +196,7 @@ function createDayHtml(year, month, day) {
             ${createOptionsHtml()}
         </select>
 
-        <div class="shift-label">Night</div>
+        <div class="shift-label">Noční</div>
         <select
             class="form-select form-select-sm request-select"
             data-date="${dateText}"
@@ -164,25 +205,28 @@ function createDayHtml(year, month, day) {
         </select>
     `;
 }
+window.createDayHtml = createDayHtml;
 
 function createOptionsHtml() {
     return requestOptions
         .map(item => `<option value="${item[0]}">${item[1]}</option>`)
         .join("");
 }
+window.createOptionsHtml = createOptionsHtml;
 
 function updateCounter() {
     const count = getSelectedRequests().length;
 
     requestCounter.innerHTML =
-        `Selected requests: <strong>${count}</strong> / ${maxRequests}`;
+        `Počet zadaných požadavků: <strong>${count}</strong> z ${maxRequests}`;
 
     if (count > maxRequests) {
         requestCounter.className = "text-danger text-center mb-3";
     } else {
-        requestCounter.className = "text-success text-center mb-3";
+        requestCounter.className = "text-success text-center mb-3 c-blue-darker";
     }
 }
+window.updateCounter = updateCounter;
 
 function getSelectedRequests() {
     return Array.from(document.querySelectorAll(".request-select"))
@@ -193,6 +237,7 @@ function getSelectedRequests() {
             request: select.value
         }));
 }
+window.getSelectedRequests = getSelectedRequests;
 
 async function saveRequests() {
     const requests = getSelectedRequests();
@@ -214,15 +259,16 @@ async function saveRequests() {
             return;
         }
 
-        msg.className = "text-success text-center mt-3";
-        msg.innerText = "Requests saved";
+        msg.className = "text-success text-center mt-3 c-blue-darker";
+        msg.innerText = "Požadavky uloženy";
 
     } catch (err) {
         showError(err.message);
     }
 }
+window.saveRequests = saveRequests;
 
-function showError(text) {
+function showErrorxx(text) {
     msg.className = "text-danger text-center mt-3";
     msg.innerText = text;
 }
@@ -231,6 +277,7 @@ function isWeekend(date) {
     const d = date.getDay();
     return d === 0 || d === 6;
 }
+window.isWeekend = isWeekend;
 
 function isCzechHoliday(date) {
     const year = date.getFullYear();
@@ -254,6 +301,7 @@ function isCzechHoliday(date) {
     if (fixedHolidays.includes(month + "-" + day)) {
         return true;
     }
+    
 
     const easter = getEasterSunday(year);
 
@@ -262,6 +310,7 @@ function isCzechHoliday(date) {
 
     return sameDate(date, goodFriday) || sameDate(date, easterMonday);
 }
+window.isCzechHoliday = isCzechHoliday;
 
 function getEasterSunday(year) {
     const a = year % 19;
@@ -281,12 +330,14 @@ function getEasterSunday(year) {
 
     return new Date(year, month - 1, day);
 }
+window.getEasterSunday = getEasterSunday;
 
 function addDays(date, days) {
     const result = new Date(date);
     result.setDate(result.getDate() + days);
     return result;
 }
+window.addDays = addDays;
 
 function sameDate(a, b) {
     return (
@@ -295,3 +346,4 @@ function sameDate(a, b) {
         a.getDate() === b.getDate()
     );
 }
+window.sameDate = sameDate;
