@@ -78,6 +78,14 @@ body {
     color: white;
 }
 
+.inp-blue-light {
+    background: var(--blue-light);
+    border-color: var(--blue-middle);
+    color: var(--blue-darker);
+}
+
+
+
 .btn-blue-darker:hover {
     background: var(--blue-darker);
     border-color: var(--blue-darker);
