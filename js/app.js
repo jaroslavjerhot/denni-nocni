@@ -80,7 +80,7 @@ async function fShowPage(sPage, dct = {}) {
     
     
     document.addEventListener("click", fDispatch);
-// document.addEventListener("change", fDispatch);
+    document.addEventListener("change", fDispatch);
 // document.addEventListener("input", fDispatch);
     
     fFillPage(document.getElementById("appContent"),dct);

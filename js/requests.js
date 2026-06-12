@@ -29,6 +29,8 @@ const requestOptionsNight = [
 ];
 
 
+//document.getElementById("requestMonth").addEventListener("change", fRenderCalendar);
+
 
 function fGetMonthAhead(iDays=0) {
     const dt = new Date();
@@ -70,8 +72,6 @@ window.fInitRequestsPage = fInitRequestsPage;
 //     initMonthSelectors();
 //     fRenderCalendar();
 // });
-
-// window.saveRequests = saveRequests;
 
 // function initMonthSelectors() {
 //     const now = new Date();
@@ -260,7 +260,7 @@ function getSelectedRequests() {
 }
 window.getSelectedRequests = getSelectedRequests;
 
-async function saveRequests() {
+async function fSaveRequests() {
     const requests = getSelectedRequests();
 
     if (requests.length > maxRequests) {
@@ -287,7 +287,7 @@ async function saveRequests() {
         showError(err.message);
     }
 }
-window.saveRequests = saveRequests;
+window.fSaveRequests = fSaveRequests;
 
 function showErrorxx(text) {
     msg.className = "text-danger text-center mt-3";

@@ -69,7 +69,7 @@ async function fLogin() {
         appState.dctEmpl.code = employeeDoc.id;
         appState.dctDepartment = await fGetDctFromDoc("departments", appState.dctEmpl.department);
         appState.dctCompany = await fGetDctFromDoc("companys", appState.dctDepartment.company);
-        const dctTitle2 = {'profileTitle2': appState.dctCompany.description + " - " + appState.dctDepartment.description};
+        const dctTitle2 = {'profileTitle2': appState.dctCompany.description + " - " + appState.dctDepartment.description + ", " + (appState.dctEmpl.description || "")};
             
 
         //alert("appState.dctEmpl: " + JSON.stringify(appState.dctEmpl));
