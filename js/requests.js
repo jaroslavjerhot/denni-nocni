@@ -14,13 +14,20 @@ import {
 
 const maxRequests = 10;
 
-const requestOptions = [
-    ["", "-"],
-    ["wnt", "chci"],
-    ["cnt", "nemohu"],
-    ["hld", "dovolená"],
-    ["sck", "nemoc/očr"]
+const requestOptionsDay = [
+    ["", "Denní"],
+    ["wnt", "D: chci"],
+    ["cnt", "D: nemohu"],
+    ["hld", "D: dovolená"],
+    ["sck", "D: nemoc/očr"],
+  ];
+
+const requestOptionsNight = [
+    ["", "Noční"],
+    ["wnt", "N: chci"],
+    ["cnt", "N: nemohu"],
 ];
+
 
 
 function fGetMonthAhead(iDays=0) {
@@ -153,7 +160,7 @@ function fRenderCalendar() {
                 td.classList.add("holiday-day");
             }
 
-            td.innerHTML = createDayHtml(year, month, day);
+            td.innerHTML = createRequestHtml(year, month, day);
 
             tr.appendChild(td);
             day++;
@@ -172,13 +179,25 @@ function fRenderCalendar() {
         .querySelectorAll(".request-select")
         .forEach(select => {
             select.addEventListener("change", updateCounter);
+            select.addEventListener("change", () => fChangeRequestColor(select));
         });
+}
+
+function fChangeRequestColor(select) {
+
+    Array.from(select.classList)
+        .filter(c => c.startsWith("sel-shift-"))
+        .forEach(c =>
+            select.classList.remove(c)
+        );
+    
+        select.classList.add("sel-shift-" + select.value);
 }
 
 window.fRenderCalendar = fRenderCalendar;
 
 
-function createDayHtml(year, month, day) {
+function createRequestHtml(year, month, day) {
     const dateText =
         year + "-" +
         String(month).padStart(2, "0") + "-" +
@@ -186,28 +205,30 @@ function createDayHtml(year, month, day) {
 
     const dayInWeekCz = ["Ne", "Po", "Út", "St", "Čt", "Pá", "So", ][new Date(year, month - 1, day).getDay()];    
     return `
-        <div class="day-number">${dayInWeekCz} ${day}.</div>
+        <div class="day-number">${dayInWeekCz} ${day}. ${month}.</div>
 
-        <div class="shift-label">Denní</div>
+        
         <select
-            class="form-select form-select-sm mb-2 request-select"
-            data-date="${dateText}"
-            data-shift="day">
-            ${createOptionsHtml()}
+            class="form-select form-select-sm request-select mb-2"
+            id="requestType"
+            data-shift="${dateText}-d">
+            ${createOptionsHtml('d')}
         </select>
 
-        <div class="shift-label">Noční</div>
+        
         <select
-            class="form-select form-select-sm request-select"
-            data-date="${dateText}"
-            data-shift="night">
-            ${createOptionsHtml()}
+            class="form-select form-select-sm request-select mb-3"
+            id="requestType"
+            data-shift="${dateText}-n">
+            ${createOptionsHtml('n')}
         </select>
     `;
 }
-window.createDayHtml = createDayHtml;
+window.createRequestHtml = createRequestHtml;
 
-function createOptionsHtml() {
+function createOptionsHtml(sDayNight){
+    let requestOptions = sDayNight=='d' ? requestOptionsDay : requestOptionsNight;
+    
     return requestOptions
         .map(item => `<option value="${item[0]}">${item[1]}</option>`)
         .join("");
