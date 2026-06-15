@@ -77,123 +77,34 @@
                 <!-- POSITION -->
 
                 <div class="row g-2 mb-3">
-
-                    <!-- <div class="col-12 col-md-6">
-                        <label class="form-label section-title c-blue-darker">Oddělení</label>
-                        <select id="department" class="form-select" data-options="dctDepartments" data-value="department" placeholder="Vyberte oddělení">
-                        </select>
-                    </div> -->
                     
                     <div class="col-12 col-md-6">
-                        <label class="form-label section-title c-blue-darker">Preferované pracoviště</label>
-                        <select id="pref_spot" class="form-select" data-options="dctSpots" data-value="pref_spot" placeholder="Vyberte preferované pracoviště">
-                        </select>
+                        <label class="form-label section-title c-blue-darker">Preferovaná pracoviště</label>
+                        <input id="spotsPicker" class="form-control" readonly data-action="fPickFavoriteSpots">
+                    </div>
+                    
+                    <div class="col-12 col-md-6">
+                        <label class="form-label section-title c-blue-darker">Pracovní pozice (i doplňkové)</label>
+                        <input id="positionsPicker" class="form-control" readonly data-action="fPickFavoritePositions">
                     </div>
 
                 </div>
 
-                <div class="row g-2 mb-3">
-
-                    <div class="col-12 col-md-6">
-                        <label class="form-label section-title c-blue-darker">Hlavní pracovní pozice</label>
-                        <select id="pos1" class="form-select" data-options="dctPositions" data-value="pos" placeholder="Vyberte první pozici">
-                        </select>
-                    </div>
-
-                    <div class="col-12 col-md-6">
-                        <label class="form-label section-title c-blue-darker">Vedlejší pracovní pozice</label>
-                        <select id="pos2" class="form-select" data-options="dctPositions" data-value="pos2" placeholder="Vyberte druhou pozici">
-                        </select>
-                    </div>
-                    
-                </div>
+                
 
                 <!-- DEPUTIES -->
-
                 <div class="section-title c-blue-darker" data-visible="role=Mngr">Zástupci (mají podobná práva jako vy)</div>
-                
-
-                <div class="row g-2 mb-3">
-
-                    <div class="col-12 col-md-6">
-                        <select id="deputy1" class="form-select" data-options="dctEmplWoThis" data-value="deputy_1" placeholder="Vyberte zástupce 1">
-                            <option value="">Zástupce 1</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12 col-md-6">
-                        <select id="deputy2" class="form-select" data-options="dctEmplWoThis" data-value="deputy_2" placeholder="Vyberte zástupce 2">
-                            <option value="">Zástupce 2</option>
-                        </select>
-                    </div>
-                </div>
+                <input id="deputyPicker" class="form-control" readonly data-action="fPickDeputyEmployees">
 
                 <!-- favorite_ -->
+                <div class="section-title c-blue-darker">Oblíbení kolegové/yně (budou preferováni při rozepisování do směn)</div>
+                <input id="favoritePicker" class="form-control" readonly data-action="fPickFavoriteEmployees">
 
-                <div class="section-title c-blue-darker">Oblíbení kolegové/yně (budou preferováni při rozepisování do směnách)</div>
-
-                <div class="row g-2 mb-3">
-
-                    <div class="col-12 col-md-6">
-                        <select id="favorite_1" class="form-select" 
-                        data-options="dctEmplWoThis" data-value="favorite_1"
-                        placeholder="Vyberte oblíbeného kolegu/yni 1">
-                            <option value="">Oblíbený kolega/yně 1</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12 col-md-6">
-                        <select id="favorite_2" class="form-select" data-options="dctEmplWoThis" data-value="favorite_2" placeholder="Vyberte oblíbeného kolegu/yni 2">
-                            <option value="">Oblíbený kolega/yně 2</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12 col-md-6">
-                        <select id="favorite_3" class="form-select" data-options="dctEmplWoThis" data-value="favorite_3" placeholder="Vyberte oblíbeného kolegu/yni 3">
-                            <option value="">Oblíbený kolega/yně 3</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12 col-md-6">
-                        <select id="favorite_4" class="form-select" data-options="dctEmplWoThis" data-value="favorite_4" placeholder="Vyberte oblíbeného kolegu/yni 4">
-                            <option value="">Oblíbený kolega/yně 4</option>
-                        </select>
-                    </div>
-
-                </div>
-
-                <!-- UNfavorite_ -->
-
-                <div class="section-title c-blue-darker">Neoblíbení kolegové/yně (nebudou se vám přiřazovat do směn)</div>
                 
+                <!-- UNfavorite_ -->
+                <div class="section-title c-blue-darker">Neoblíbení kolegové/yně (pokud to bude možné, nebudou vám přiřazováni do směn)</div>
+                <input id="unfavoritePicker" class="form-control" readonly data-action="fPickUnfavoriteEmployees">
 
-                <div class="row g-2 mb-3">
-
-                    <div class="col-12 col-md-6">
-                        <select id="unfavorite_1" class="form-select" data-options="dctEmplWoThis" data-value="unfavorite_1" placeholder="Vyberte neoblíbeného kolegu/yni 1">
-                            <option value="">Neoblíbený kolega/yně 1</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12 col-md-6">
-                        <select id="unfavorite_2" class="form-select" data-options="dctEmplWoThis" data-value="unfavorite_2" placeholder="Vyberte neoblíbeného kolegu/yni 2">
-                            <option value="">Neoblíbený kolega/yně 2</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12 col-md-6">
-                        <select id="unfavorite_3" class="form-select" data-options="dctEmplWoThis" data-value="unfavorite_3" placeholder="Vyberte neoblíbeného kolegu/yni 3">
-                            <option value="">Neoblíbený kolega/yně 3</option>
-                        </select>
-                    </div>
-
-                    <div class="col-12 col-md-6">
-                        <select id="unfavorite_4" class="form-select" data-options="dctEmplWoThis" data-value="unfavorite_4" placeholder="Vyberte neoblíbeného kolegu/yni 4">
-                            <option value="">Neoblíbený kolega/yně 4</option>
-                        </select>
-                    </div>
-
-                </div>
 
                 
             <!-- BUTTONS -->

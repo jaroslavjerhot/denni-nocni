@@ -8,6 +8,7 @@ import {
 import "./login.js";
 import "./registration.js";
 import "./requests.js";
+import "./modalDialog.js";
 
 import "./profile.js";
 
@@ -22,10 +23,10 @@ async function fStartApplication() {
     await fLoadPages();
     
         
-    //await showMsg("auth", auth);
+    //await fShowMsg("auth", auth);
 
     const user = auth.currentUser;
-// await showMsg("User", user);
+// await fShowMsg("User", user);
     if (user) {
         
         // await fShowPage("login", {email: user.email});
@@ -239,33 +240,28 @@ function fCanManageDepartment(sDepartment) {
     );
 }
 
-// description of function fGetDctFromCollection: 
+// description of function fGetVDctFromCollection: 
 // This function retrieves documents from a specified Firestore collection and constructs a dictionary mapping document IDs to their descriptions. 
-// It takes one parameter, sCollectionName, which is the name of the Firestore collection to query. The function returns a dictionary where the keys are document IDs and the values are the corresponding descriptions from the documents. If an error occurs during the retrieval process, it logs the error to the console and displays an error message using the showMsg function.
-async function fGetDctFromCollection(sCollectionName) {
+// It takes one parameter, sCollectionName, which is the name of the Firestore collection to query. The function returns a dictionary where the keys are document IDs and the values are the corresponding descriptions from the documents. If an error occurs during the retrieval process, it logs the error to the console and displays an error message using the fShowMsg function.
+async function fGetVDctFromCollection(sCollectionName) {
     //alert(appState.department);
     const dct = {};
 
     //alert("Loading code descriptions for: " + sCollectionName);
     try {
         let snapshot = null;
-        if (sCollectionName === "employees") {
-            snapshot = await getDocs(query(
-                collection(db,sCollectionName),
-                where("active", "==", true),
-                where("department", "==", appState.department),
-                orderBy("description", "asc")
-            )) } else {
-            snapshot = await getDocs(query(
-                collection(db,sCollectionName),
-                where("active", "==", true),
-                where("department", "==", appState.department),
-                orderBy("sortOrder", "asc")
-            ))};
+        
+        snapshot = await getDocs(query(
+            collection(db,sCollectionName),
+            where("active", "==", true),
+            where("department", "==", appState.department),
+            orderBy("sortOrder", "asc")
+        ));
+
                 
 
         //alert("snapshot: " + snapshot.size);
-        //await showMsg("snapshot", snapshot);
+        //await fShowMsg("snapshot", snapshot);
         snapshot.forEach(function(docSnap) {
             const data = docSnap.data();
             //alert("data: " + JSON.stringify(data));
@@ -276,15 +272,11 @@ async function fGetDctFromCollection(sCollectionName) {
     return dct;
 } catch (err) {
     //alert("Firebase error: " + err.code + " - " + err.message);
-    console.error(
-        "Firebase error:",
-        err.code,
-        err.message
-    );
-    await showMsg("err", fGetFirebaseErrorCz(err.code));
+    console.error("Firebase error:", err.code, err.message);
+    await fShowMsg("err", fGetFirebaseErrorCz(err.code));
 }
 }
-window.fGetDctFromCollection = fGetDctFromCollection;
+window.fGetVDctFromCollection = fGetVDctFromCollection;
 
 // description of function fGetDctFromDoc: 
 // This function retrieves a document from a specified Firestore collection using the document ID. It takes two parameters: sCollectionName (the name of the collection) and sDocumentId (the ID of the document to retrieve). The function returns an object containing the document ID and its data if the document exists, or null if it does not exist or if an error occurs during retrieval. The function also handles errors by logging them to the console and returning null.
@@ -347,78 +339,14 @@ function fGetEditablePageData() {
 }
 window.fGetEditablePageData = fGetEditablePageData;
 
-function fCheckEmployeeProfileData(dctData) {
-    
-    // check phone number format - it should start with +420 and be followed by 9 digits, optionally with spaces
-    let phone = fGetDctValueByKey(dctData, "phone").trim();
-    if (!phone.startsWith("+420")) {
-        phone = "+420" + phone.replaceAll(/\s/g, "");
-    } else {
-        phone = phone.replaceAll(/\s/g, "");
-    }
-    const phoneRegex = /^\+\d{12}$/;
-    if (!phoneRegex.test(phone)) {
-        return {valid: false, message: "Neplatný formát telefonu. Očekává se formát +420123456789."};
-    } else {
-        dctData.phone = phone.substring(0,4) + " " + phone.substring(4,7) + " " + phone.substring(7,10) + " " + phone.substring(10,13);
-    }
 
-    // check if shortname is not in others
-    const shortname = fGetDctValueByKey(dctData, "shortname").trim();
-    if (shortname) {
-        for (const [emplId, empl] of Object.entries(appState.dctEmplWoThis)) {
-            if (empl.shortname === shortname) {
-                return {valid: false, message: "Zkrácený název již používá jiný zaměstnanec. Zvolte prosím jiný."};
-            }
-        }
-    }
-    dctData.shortname = shortname;
 
-    // check if pos and pos2 are not the same and pos is not empty
-    const pos = fGetDctValueByKey(dctData, "pos");
-    if (pos === "") {
-        return {valid: false, message: "Hlavní pozice musí být vyplněna."};
-    }
-    const pos2 = fGetDctValueByKey(dctData, "pos2");
-    if (pos && pos === pos2) {
-        return {valid: false, message: "Hlavní a vedlejší pozice nemohou být stejné."};
-    }
-
-    // check if there are no duplicities in favorite1, favorite2 and favorite3, favorite4, 
-    // unfavorite1, unfavorite2, unfavorite3, unfavorite4
-    const lstFav = [];
-    for (let i = 1; i <= 4; i++) {
-        const fav = fGetDctValueByKey(dctData, "favorite_" + i);
-        if (fav && lstFav.includes(fav)) {
-            const name = appState.dctEmployees[fav].description;
-            return {valid: false, 
-                message: `Duplicitní oblíbení a neoblíbení kolegové (${name}).`}
-        };
-        lstFav.push(fav);
-        const unfav = fGetDctValueByKey(dctData, "unfavorite_" + i);
-        if (unfav && lstFav.includes(unfav)) {
-            const name = appState.dctEmployees[unfav].description;
-            return {valid: false, 
-                message: `Duplicitní oblíbení a neoblíbení kolegové (${name}).`}
-        };
-        lstFav.push(unfav);
-    }
-
-    // check if deputy1 and deputy2 are not the same
-    const deputy1 = fGetDctValueByKey(dctData, "deputy_1");
-    const deputy2 = fGetDctValueByKey(dctData, "deputy_2");  
-    if (deputy1 === deputy2) {
-        return {valid: false, message: "Zástupci nemohou být stejní."};
-    }
-    return {valid: true};
-}
-
-async function fSaveEmployeeProfile() {
+async function fSaveDctToCollectionsmazat(sCollection, dctFormData, sDocId = null, bPublish = false) {
 
     const dctData = fGetEditablePageData();
     const validation = fCheckEmployeeProfileData(dctData);
     if (!validation.valid) {
-        await showMsg("err", validation.message);
+        await fShowMsg("err", validation.message);
         return;
     }
     // alert("Data to save: " + JSON.stringify(dctData, null, 2));
@@ -435,13 +363,92 @@ async function fSaveEmployeeProfile() {
         ...dctData
     };
 
-    await showMsg("succ", `Profil uživatele ${appState.dctEmpl.description} byl uložen.`);
+    await fShowMsg("succ", `Profil uživatele ${appState.dctEmpl.description} byl uložen.`);
+}
+// combines existing data with new data from form, updates the document in Firestore
+async function fSaveDctToCollection(sCollection, dctBaseData, dctFormData, sDocId = null, bPublish = false, bClose = false) {
+    console.log("fSaveDctToCollection: collection:", sCollection, "base data:", dctBaseData, "form data:", dctFormData, "doc ID:", sDocId, "publish:", bPublish, "close:", bClose);
+    dctFormData = {...dctBaseData, ...dctFormData, };
+    sDocId = sDocId || String(fGetDctValueByKey(dctFormData, "code")) || String(fGetDctValueByKey(dctBaseData, "code"));
+
+    dctFormData.updated_at = serverTimestamp();
+    dctFormData.updated_by = appState.dctEmpl.code;
+    dctFormData.published = bPublish;
+    dctFormData.closed = bClose;
+      
+    await updateDoc(doc(db, sCollection, sDocId), dctFormData);
+
+    console.log("fSaveDctToCollection: updated document:", sDocId, "in collection:", sCollection, "with data:", dctFormData);
+    localStorage.setItem(sCollection + "_" + sDocId, JSON.stringify(dctFormData));
+
+    await fShowMsg("succ", `Uloženo.`);
 }
 
-window.fSaveEmployeeProfile = fSaveEmployeeProfile;
+window.fSaveDctToCollection = fSaveDctToCollection;
 
-function fRenderRequestsCalendar() {
-    alert("fRenderRequestsCalendar");
+function fDctToLst(dct, sKeyName = "code", sValueName = "description") {
+    const lst = [];
+    Object.entries(dct).forEach(function([k, v]) {
+        lst.push([k, v[sValueName] || v[sKeyName] || k]);
+    });
+    return lst;
+    }
+window.fDctToLst = fDctToLst;
+
+
+
+async function fPickSelection(element, sTitle, lstChoices = [], lstInOut, maxSelected = 1) {
+    //alert("fPickSelection");
+    // console.log("element", element);
+    // console.log("appState", appState);
+    // alert("element: " + element.dataset.options);
+    // alert("appState: " + JSON.stringify(appState));
+    //const options = appState[element.dataset.options];
+    // alert("options: " + JSON.stringify(options));            
+    const selectedIds = await fShowChoiceModal(
+        element.dataset.title || "Vyberte položky",
+        lstChoices,
+        lstInOut ?? [],
+        maxSelected
+    );
+
+    if (selectedIds === null) {
+        return;
+    }
+
+    // appState.dctEmpl.favorites = selectedIds;
+    lstInOut = selectedIds;
+
+    const lstDesc = selectedIds.map((id) => fGetNthCol(lstChoices, id, 1));
+    element.value = lstDesc.join(", ");
 }
-window.fRenderRequestsCalendar = fRenderRequestsCalendar;
+
+window.fPickSelection = fPickSelection;
+
+
+function fGetNthCol(lst, lstIds, n) {
+    if (!lstIds || lstIds.length === 0) {
+        return "";
+    }   
+    for (const row of lst) {
+        if (lstIds.includes(row[0])) {
+            return row[n] ?? "";
+        }
+    }
+    return "";
+}
+
+function fCreateSortText(text) {
+
+    return text
+        .normalize("NFD")
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        )
+        .toLowerCase()
+        .trim();
+}
+    
+
 

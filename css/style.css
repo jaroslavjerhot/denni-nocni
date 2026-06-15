@@ -78,19 +78,26 @@ body {
     color: white;
 }
 
-.inp-blue-light {
+.btn-blue-darker:hover {
+    background: var(--blue-darker);
+    border-color: var(--blue-darker);
+    color: white;
+}
+
+.inp-blue-lighter {
     background: var(--blue-light);
+    border-color: var(--blue-middle);
+    color: var(--blue-darker);
+}
+
+.inp-blue-lighter:hover {
+    background: var(--blue-middle);
     border-color: var(--blue-middle);
     color: var(--blue-darker);
 }
 
 
 
-.btn-blue-darker:hover {
-    background: var(--blue-darker);
-    border-color: var(--blue-darker);
-    color: white;
-}
 
 .btn-blue-no-border {
     background: white;
@@ -151,7 +158,7 @@ body {
 }
 
 .calendar-day {
-    min-width: 100px;
+    min-width: 80px;
     vertical-align: top;
 }
 
@@ -216,7 +223,7 @@ body {
         border-radius: 12px;
     }
     .calendar-day {
-        min-width: 115px;
+        min-width: 90px;
         font-size: .85rem;
     }
 

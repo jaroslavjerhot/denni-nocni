@@ -92,6 +92,7 @@ export const appState = {
     dctEmployees: null,
     dctDepartments: null,
     dctSpots: null,
+    lstSpots: null,
     dctPositions: null,
 };
 

@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import firebase_admin
+import unicodedata, re
 
 from firebase_admin import credentials
 from firebase_admin import firestore
@@ -36,6 +37,9 @@ def fConvertValue(value):
 
     return value
 
+def fCreateSortText(text):  
+    rePattern = r'[\u0300-\u036f]'
+    return re.sub(rePattern, '', unicodedata.normalize('NFD', text)).lower().strip()
 
 def fImportCollection(sCollectionName, sCsvFileName, sIdColumn):
     sCsvPath = os.path.join(DATA_DIR, sCsvFileName)
@@ -59,10 +63,12 @@ def fImportCollection(sCollectionName, sCsvFileName, sIdColumn):
             
         if sCollectionName == "employees":
             dctData["description"] = f"{dctData.get('surname', '')} {dctData.get('givenname', '')}".strip()
+            dctData["sortOrder"] = fCreateSortText(fCreateSortText(dctData["description"]))
 
         db.collection(sCollectionName).document(sDocumentId).set(dctData)
 
         print(f"Imported {sCollectionName}/{sDocumentId}")
+
 
 
 cred = credentials.Certificate(SERVICE_ACCOUNT_PATH)
@@ -72,15 +78,15 @@ db = firestore.client()
 
 
 
-fImportCollection("companys","companys.csv","code")
+# fImportCollection("companys","companys.csv","code")
 
-fImportCollection("departments","departments.csv","code")
+# fImportCollection("departments","departments.csv","code")
 
-fImportCollection("spots","spots.csv","code")
+# fImportCollection("spots","spots.csv","code")
 
-fImportCollection("positions","positions.csv","code")
+# fImportCollection("positions","positions.csv","code")
 
-fImportCollection("roles","roles.csv","code")
+# fImportCollection("roles","roles.csv","code")
 
 fImportCollection("employees","employees.csv","code")
 
