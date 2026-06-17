@@ -11,7 +11,7 @@ import {
 } from "./firebase.js";
 import "./login.js";
 import "./registration.js";
-import "./requests.js";
+import "./userRequests.js";
 import "./modalDialog.js";
 import "./userProfile.js";
 
@@ -59,7 +59,7 @@ async function fLoadPages() {
     const lstPages = [
         "login",
         "registration",
-        "requests",
+        "userRequests",
         "userProfile",
     ];
     
@@ -394,6 +394,7 @@ window.fGetEditablePageData = fGetEditablePageData;
 async function fSaveDctToCollection(sCollection, dctBaseData, dctFormData, sDocId = null, bPublish = false, bClose = false) {
     //console.log("fSaveDctToCollection: collection:", sCollection, "base data:", dctBaseData, "form data:", dctFormData, "doc ID:", sDocId, "publish:", bPublish, "close:", bClose);
     dctFormData = {...dctBaseData, ...dctFormData, };
+    console.log("fSaveDctToCollection: combined data:", dctFormData);
     sDocId = sDocId || String(fGetDctValueByKey(dctFormData, "code")) || String(fGetDctValueByKey(dctBaseData, "code"));
 
     dctFormData.updated_at = serverTimestamp();
@@ -423,7 +424,7 @@ window.fDctToLst = fDctToLst;
 
 
 async function fPickSelection(element, sTitle, lstChoices = [], lstInOut, maxSelected = 1) {
-    //console.log("fPickSelection: element:", element, "title:", sTitle, "choices:", lstChoices, "initial selection:", lstInOut, "max selected:", maxSelected);
+    console.log("fPickSelection: element:", element, "title:", sTitle, "choices:", lstChoices, "initial selection:", lstInOut, "max selected:", maxSelected);
     const dctSelected = await fShowChoiceModal(
         sTitle,
         lstChoices,
@@ -457,6 +458,7 @@ function fGetNthCol(lst, lstIds, n) {
     }
     return "";
 }
+window.fGetNthCol = fGetNthCol;
 
 function fCreateSortText(text) {
 

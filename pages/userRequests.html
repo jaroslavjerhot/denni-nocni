@@ -1,11 +1,11 @@
-<div id="pageRequests" class="app-page">
+<div id="pageProfile" class="app-page">
   <div class="container-fluid page-container">
     
     <div class="row justify-content-center">
 
         <div class="col-12 col-xl-10">
 
-            <div class="card card-auth p-4 p-md-5 mx-auto w-none">
+            <div class="card card-auth p-4 p-md-5 mx-auto">
 
                 <h1 class="text-center mb-0" style="font-size: 3rem;">
                     <span style="color: var(--blue-dark);">denní</span><span style="color: var(--blue-middle);">:</span><span style="color: var(--blue-green);">noční</span>
@@ -13,20 +13,18 @@
                 <!-- <h6 class="text-center mb-4 c-blue-darker">
                     Vaše směny pod kontrolou
                 </h6> -->
-                <h6 class="text-center mb-4 c-blue-darker"  data-text="profileTitle2">
+                <h6 class="text-center mb-4 c-blue-darker">
+                    <span data-text="titUser"></span>: <span data-text="titCompany"></span> | <span data-text="titDepartment"></span>
                 </h6>
 
-                <h2 class="c-blue-darker text-center mb-4" data-text="profileTitle">
+                <h2 class="c-blue-darker text-center mb-4" data-text="titPage">
                 </h2>
-                <!-- <h6 class="text-center mb-4 c-blue-darker">
-                    Vaše směny pod kontrolou
-                </h6> -->
 
         <div class="row g-2 mb-3">
 
             <div class="row justify-content-center mb-3">
                 <input type="month" id="requestMonth" class="form-control font-weight-bold inp-blue-light w-50 text-center" value=""
-                data-action="fRenderCalendar">
+                data-action="fRenderRequestsCalendar">
             </div>
 
             <!-- <div class="col-12 col-md-6">

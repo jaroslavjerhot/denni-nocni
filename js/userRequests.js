@@ -14,21 +14,24 @@ import {
     appFormValues,
 } from "./firebase.js";
 
+
 const maxRequests = 10;
 
-const requestOptionsDay = [
-    ["", "Denní"],
-    ["wnt", "D: chci"],
-    ["cnt", "D: nemohu"],
-    ["hld", "D: dovolená"],
-    ["sck", "D: nemoc/očr"],
+const lstRequestOptionsDay = [
+    ["", "Bez požadavku"],
+    ["wnt", "D: chci", "btn btn-green-lighter w-100 mb-1", "btn btn-green-darker w-100 mb-1", ],
+    ["cnt", "D: nemohu", "btn btn-red-lighter w-100 mb-1", "btn btn-red-darker w-100 mb-1"],
+    ["hld", "D: dovolená", "btn btn-yellow-lighter w-100 mb-1", "btn btn-yellow-darker w-100 mb-1"],
+    ["sck", "D: nemoc/očr", "btn btn-blue2-lighter w-100 mb-1", "btn btn-blue2-darker w-100 mb-1"],
   ];
 
-const requestOptionsNight = [
+const lstRequestOptionsNight = [
     ["", "Noční"],
-    ["wnt", "N: chci"],
-    ["cnt", "N: nemohu"],
+    ["wnt", "N: chci", "btn btn-green-lighter w-100 mb-1", "btn btn-green-darker w-100 mb-1"],
+    ["cnt", "N: nemohu", "btn btn-red-lighter w-100 mb-1", "btn btn-red-darker w-100 mb-1"],
 ];
+
+appHtml.optRequests = lstRequestOptionsDay;
 
 
 //document.getElementById("requestMonth").addEventListener("change", fRenderCalendar);
@@ -45,77 +48,24 @@ function fGetMonthAhead(iDays=0) {
     return dt.getFullYear() + "-" + String(dt.getMonth() + 1).padStart(2, "0");
 }
 
-async function fInitRequestsPage() {
+async function fShowUserRequestsPage(dctEditedUser) {
+    appHtml.titUser = dctEditedUser.description;
+    appHtml.titPage = "Požadavky na směny";
+    appFormValues.userRequests = {}
+    
+    console.log("fShowUserRequestsPage - dctEditedUser:", dctEditedUser);
+    await fShowPage("userRequests", {...dctEditedUser, ...appHtml});
     const pageRequests = document.getElementById("pageRequests");
     const monthSelect = document.getElementById("requestMonth");
 
     monthSelect.value = fGetMonthAhead();
 
-    fRenderCalendar();
+    fRenderRequestsCalendar();
 }
-window.fInitRequestsPage = fInitRequestsPage;
-
-// let authReady = false;
+window.fShowUserRequestsPage = fShowUserRequestsPage;
 
 
-
-// onAuthStateChanged(auth, user => {
-//     if (!user) {
-//         location.href = "index.html";
-//         return;
-//     }
-
-//     if (authReady) {
-//         return;
-//     }
-
-//     authReady = true;
-
-//     initMonthSelectors();
-//     fRenderCalendar();
-// });
-
-// function initMonthSelectors() {
-//     const now = new Date();
-//     const currentMonth = now.getMonth() + 1;
-//     const currentYear = now.getFullYear();
-
-//     const monthNames = [
-//         "January", "February", "March", "April",
-//         "May", "June", "July", "August",
-//         "September", "October", "November", "December"
-//     ];
-
-//     monthSelect.innerHTML = "";
-
-//     monthNames.forEach((name, index) => {
-//         const option = document.createElement("option");
-//         option.value = index + 1;
-//         option.textContent = name;
-
-//         if (index + 1 === currentMonth) {
-//             option.selected = true;
-//         }
-
-//         monthSelect.appendChild(option);
-//     });
-
-//     yearSelect.innerHTML = "";
-
-//     for (let y = currentYear - 1; y <= currentYear + 2; y++) {
-//         const option = document.createElement("option");
-//         option.value = y;
-//         option.textContent = y;
-
-//         if (y === currentYear) {
-//             option.selected = true;
-//         }
-
-//         yearSelect.appendChild(option);
-//     }
-// }
-
-function fRenderCalendar() {
+function fRenderRequestsCalendar() {
     const monthSelect = document.getElementById("requestMonth");
     const calendarBody = document.getElementById("calendarBody");
     
@@ -185,7 +135,7 @@ function fRenderCalendar() {
         });
 }
 
-function fChangeRequestColor(select) {
+function fChangeRequestColorsmaz(select) {
 
     Array.from(select.classList)
         .filter(c => c.startsWith("sel-shift-"))
@@ -196,7 +146,7 @@ function fChangeRequestColor(select) {
         select.classList.add("sel-shift-" + select.value);
 }
 
-window.fRenderCalendar = fRenderCalendar;
+window.fRenderRequestsCalendar = fRenderRequestsCalendar;
 
 
 function createRequestHtml(year, month, day) {
@@ -206,32 +156,44 @@ function createRequestHtml(year, month, day) {
         String(day).padStart(2, "0");
 
     const dayInWeekCz = ["Ne", "Po", "Út", "St", "Čt", "Pá", "So", ][new Date(year, month - 1, day).getDay()];    
+    // return `
+    //     <div class="day-number">${dayInWeekCz} ${day}. ${month}.</div>
+
+        
+    //     <select
+    //         class="form-select form-select-sm request-select mb-2"
+    //         id="requestType"
+    //         data-shift="${dateText}-d">
+    //         ${createOptionsHtml('d')}
+    //     </select>
+
+        
+    //     <select
+    //         class="form-select form-select-sm request-select mb-3"
+    //         id="requestType"
+    //         data-shift="${dateText}-n">
+    //         ${createOptionsHtml('n')}
+    //     </select>
+    // `;
+    const sDate = `${dayInWeekCz} ${day}. ${month}.`;
     return `
-        <div class="day-number">${dayInWeekCz} ${day}. ${month}.</div>
+        <div class="day-number">${sDate}</div>
 
+        <input id="${dateText}-d" class="form-control shift-input" readonly 
+            data-value="${dateText}-d" data-action="fPickShift"
+            data-shift="${dateText}-d" data-descr="${sDate} - denní">
         
-        <select
-            class="form-select form-select-sm request-select mb-2"
-            id="requestType"
-            data-shift="${dateText}-d">
-            ${createOptionsHtml('d')}
-        </select>
-
-        
-        <select
-            class="form-select form-select-sm request-select mb-3"
-            id="requestType"
-            data-shift="${dateText}-n">
-            ${createOptionsHtml('n')}
-        </select>
+            <input id="${dateText}-n" class="form-control shift-input" readonly 
+            data-value="${dateText}-n" data-action="fPickShift" 
+            data-shift="${dateText}-n" data-descr="${sDate} - noční">       
     `;
 }
 window.createRequestHtml = createRequestHtml;
 
 function createOptionsHtml(sDayNight){
-    let requestOptions = sDayNight=='d' ? requestOptionsDay : requestOptionsNight;
+    let lstRequestOptions = sDayNight=='d' ? lstRequestOptionsDay : lstRequestOptionsNight;
     
-    return requestOptions
+    return lstRequestOptions
         .map(item => `<option value="${item[0]}">${item[1]}</option>`)
         .join("");
 }
@@ -370,3 +332,26 @@ function sameDate(a, b) {
     );
 }
 window.sameDate = sameDate;
+
+async function fPickShift(element) {
+    //if (!appFormValues.userProfile.deputies){ appFormValues.userProfile.deputies = []; }
+    const shiftId = element.dataset.shift;
+    const shiftDescription = element.dataset.descr;
+    const requestValue = fGetDctValueByKey(appFormValues.userRequests, shiftId, '');
+    appFormValues.userRequests[shiftId] = 
+        await fPickSelection(element, shiftDescription, 
+            appHtml.optRequests, requestValue, 1);
+    // if Bez požadavku is selected, set the value to empty string
+    appFormValues.userRequests[shiftId] = appFormValues.userRequests[shiftId][0]
+    console.log("fPickShift - appFormValues.userRequests:", appFormValues.userRequests);
+    if (appFormValues.userRequests[shiftId] === '') {
+        document.getElementById(shiftId).value = "";}
+
+    // nastavi barvu pole podle treti hodnoty v optRequests pro dany shift
+    let sElementColorClass = fGetNthCol(lstRequestOptionsDay, [appFormValues.userRequests[shiftId]], 2);
+    sElementColorClass = sElementColorClass.split(" ")[1]; // get first class if there are multiple classes
+    console.log("fPickShift - sElementColorClass:", sElementColorClass);
+    element.classList.add(sElementColorClass);
+    
+}
+window.fPickShift = fPickShift;

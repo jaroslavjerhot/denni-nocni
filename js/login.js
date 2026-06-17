@@ -93,15 +93,16 @@ async function fLogin() {
         if (!appUser.edited.profilePublished) {
             
             //console.log("appUser.edited:", appUser.edited);
-            await fShowUserProfilePage(appUser.edited, false);
+            await fShowUserProfilePage(appUser.edited, true);
             //await fShowMsg("warn", "Nejprve doplňte a uložte svůj profil.");
             return;
         } else {
-            const dctTitle = {'profileTitle': "Požadavky na směny"};
+            //const dctTitle = {'profileTitle': "Požadavky na směny"};
             
-            await fShowPage("requests",{...dctTitle, ...dctTitle2, ...appCurrentUser, ...appState});
+            await fShowUserRequestsPage(appUser.edited);
+            //await fShowPage("requests",{...dctTitle, ...dctTitle2, ...appCurrentUser, ...appState});
             //alert("Přihlášení bylo úspěšné. Vítejte, " + (appCurrentUser.surname || "neznámý uživateli") + "!");
-            await fInitRequestsPage();
+            //await fInitRequestsPage();
             return;
         }
 

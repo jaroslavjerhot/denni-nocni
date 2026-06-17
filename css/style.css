@@ -9,6 +9,10 @@
     --blue-middle: #2a7cc4; 
     --blue-dark: #082c75;
     --blue-darker: #0c2b64;
+    --red-lighter: #fe0b0b;
+    --red-darker: #991b1b;
+    --yellow-lighter: #facc15;
+    --yellow-darker: #be8201;   
 }
 
 html,
@@ -96,6 +100,55 @@ body {
     color: var(--blue-darker);
 }
 
+.btn-blue2-lighter {
+    background: var(--blue-middle);
+    border-color: var(--blue-darker);
+    color: white;
+}
+.btn-blue2-darker, .btn-blue2-lighter:hover, .btn-blue2-darker:hover {
+    background: var(--blue-darker);
+    border-color: var(--blue-darker);
+    color: white;
+}
+
+.btn-green-lighter {
+    background: var(--royal-green-light);
+    border-color: var(--royal-green-dark);
+    color: white;
+}
+.btn-green-darker, .btn-green-lighter:hover, .btn-green-darker:hover     {
+    background: var(--royal-green-dark);
+    border-color: var(--royal-green-dark);
+    color: white;
+}
+.btn-red-lighter {
+    background: var(--red-lighter);
+    border-color: var(--red-darker);
+    color: white;
+}
+.btn-red-darker, .btn-red-lighter:hover, .btn-red-darker:hover {
+    background: var(--red-darker);
+    border-color: var(--red-darker);
+    color: white;
+}
+
+.btn-yellow-lighter {
+    background: var(--yellow-lighter);
+    border-color: var(--yellow-darker);
+    color: white;
+}
+.btn-yellow-darker, .btn-yellow-lighter:hover, .btn-yellow-darker:hover {
+    background: var(--yellow-darker);
+    border-color: var(--yellow-darker);
+}
+.shift-input {
+    height: 30px;
+    /* font-size: .9rem; */
+    padding: .25rem;
+    margin-left: 1px;
+    margin-right: 1px;
+    
+}
 
 
 
@@ -141,7 +194,7 @@ body {
     font-size: 1rem;
     font-weight: 600;
     margin-top: 1rem;
-}t
+}
 
 #msg {
     min-height: 24px;
