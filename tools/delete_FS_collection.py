@@ -43,10 +43,10 @@ db = firestore.client()
 
 for sCollection in [
     "employees",
-    "registeredUsers",
-    "positions",
-    "departments",
-    "roles",
-    "rooms"
+    # "registeredUsers",
+    # "positions",
+    # "departments",
+    # "roles",
+    # "rooms"
 ]:
     fDeleteCollection(sCollection)

@@ -9,7 +9,9 @@ import {
     getDocs,
     signOut,
     fGetFirebaseErrorCz,
-    appState,
+    appUser,
+    appHtml,
+    appFormValues,
 } from "./firebase.js";
 
 
@@ -65,46 +67,40 @@ async function fLogin() {
 
         // sets current employee
         const employeeDoc = employeeSnapshot.docs[0];
-        appState.dctEmpl = employeeDoc.data();
-        appState.dctEmpl.code = employeeDoc.id;
-        appState.dctDepartment = await fGetDctFromDoc("departments", appState.dctEmpl.department);
-        appState.dctCompany = await fGetDctFromDoc("companys", appState.dctDepartment.company);
-        const dctTitle2 = {'profileTitle2': appState.dctCompany.description + " - " + appState.dctDepartment.description};
-        const dctTitle3 = {'profileTitle3': appState.dctEmpl.description || ""};
+        appUser.current = employeeDoc.data();
+        appUser.current.code = employeeDoc.id;
+        
+            
+        appUser.current.dctDepartment = await fGetDctFromDoc("departments", appUser.current.department);
+        appUser.current.dctCompany = await fGetDctFromDoc("companys", appUser.current.dctDepartment.company);
+        //console.log('appUser.current:', appUser.current);
+        appHtml.titCompany = appUser.current.dctCompany.description || "";
+        appHtml.titDepartment = appUser.current.dctDepartment.description || "";
+        //console.log('appHtml:', appHtml);
+        
             
 
-        //alert("appState.dctEmpl: " + JSON.stringify(appState.dctEmpl));
-       
-        if (appState.dctEmpl.active !== true) {
+        //alert("appUser: " + JSON.stringify(appUser));
+        
+        if (appUser.current.active !== true) {
             await fShowMsg("err", "Váš účet není aktivní. Kontaktujte prosím administrátora.");
             return;
         }
 
-        // await fShowMsg("success","Přihlášení bylo úspěšné. Vítejte, " + (appState.dctEmpl.surname || "neznámý uživateli") + "!");
-        if (!appState.dctEmpl.published) {
-            appState.dctEmpl.phone = String(appState.dctEmpl.phone ?? "");
+        // await fShowMsg("success","Přihlášení bylo úspěšné. Vítejte, " + (appUser.current.surname || "neznámý uživateli") + "!");
+        appUser.edited = {...appUser.current};
+        
+        if (!appUser.edited.profilePublished) {
             
-            const dctTitle = {'profileTitle': "Profil"};
-            
-            appState.dctSpots = await fGetVDctFromCollection("spots");
-            appState.lstSpots = fDctToLst(appState.dctSpots);
-            //alert("lstSpots: " + JSON.stringify(appState.lstSpots));
-            appState.dctPositions = await fGetVDctFromCollection("positions");
-            appState.lstPositions = fDctToLst(appState.dctPositions);
-            appState.dctDepartments = await fGetVDctFromCollection("departments");
-            appState.lstDepartments = fDctToLst(appState.dctDepartments);
-            appState.dctEmployees = await fGetVDctFromCollection("employees");
-            appState.dctEmplWoThis = fRemoveKeyFromDct(appState.dctEmployees, appState.dctEmpl.code);
-            appState.lstEmplWoThis = fDctToLst(appState.dctEmplWoThis);
-            
-            await fShowPage("profile", {...dctTitle, ...dctTitle2, ...dctTitle3, ...appState.dctEmpl, ...appState});
+            //console.log("appUser.edited:", appUser.edited);
+            await fShowUserProfilePage(appUser.edited, false);
             //await fShowMsg("warn", "Nejprve doplňte a uložte svůj profil.");
             return;
         } else {
             const dctTitle = {'profileTitle': "Požadavky na směny"};
             
-            await fShowPage("requests",{...dctTitle, ...dctTitle2, ...appState.dctEmpl, ...appState});
-            //alert("Přihlášení bylo úspěšné. Vítejte, " + (appState.dctEmpl.surname || "neznámý uživateli") + "!");
+            await fShowPage("requests",{...dctTitle, ...dctTitle2, ...appCurrentUser, ...appState});
+            //alert("Přihlášení bylo úspěšné. Vítejte, " + (appCurrentUser.surname || "neznámý uživateli") + "!");
             await fInitRequestsPage();
             return;
         }

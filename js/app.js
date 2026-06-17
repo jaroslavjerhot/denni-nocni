@@ -1,6 +1,10 @@
 
 import {
-    app, auth, db, appState, collection, getDocs, query, where, orderBy, doc, getDoc, 
+    app, auth, db,
+    appUser,
+    appHtml,
+    appFormValues, 
+    collection, getDocs, query, where, orderBy, doc, getDoc, 
     updateDoc,
     serverTimestamp,
     fGetFirebaseErrorCz
@@ -9,8 +13,7 @@ import "./login.js";
 import "./registration.js";
 import "./requests.js";
 import "./modalDialog.js";
-
-import "./profile.js";
+import "./userProfile.js";
 
 
 
@@ -57,7 +60,7 @@ async function fLoadPages() {
         "login",
         "registration",
         "requests",
-        "profile",
+        "userProfile",
     ];
     
     for (const sPage of lstPages) {
@@ -78,13 +81,11 @@ async function fShowPage(sPage, dct = {}) {
     
     //alert("Page content: " + dctPages[sPage]);
     
-    
-    
     document.addEventListener("click", fDispatch);
     document.addEventListener("change", fDispatch);
 // document.addEventListener("input", fDispatch);
     
-    fFillPage(document.getElementById("appContent"),dct);
+    fFillPage(document.getElementById("appContent"), dct);
 }
 window.fShowPage = fShowPage;
 
@@ -123,13 +124,15 @@ function fFillPage(page, dct) {
     //alert("page html: " + page.innerHTML.includes("data-value") );
     //alert("data fields: " + JSON.stringify(page.querySelectorAll("[data-value]")) );
     //alert("appState[dctDepartments]: " + JSON.stringify(dct["dctDepartments"], null, 2));
+    //alert("dct: " + JSON.stringify(dct, null, 2));
     page
         .querySelectorAll("[data-value]")
         .forEach(function(element) {
+            //console.log("Processing element:", element, "with data-value:", dct[element.dataset.value]);
             const sField = element.dataset.value;
             //if (!(sField in dct)) {return};
             
-            const value = fGetDctValueByKey(dct, sField);
+            const value = fGetDctValueByKey(dct, sField, "");
 
             if (element.type === "checkbox") {
                 element.checked = value === true;
@@ -144,8 +147,16 @@ function fFillPage(page, dct) {
                 //element.value = value ?? "";
                 return;
             }
-
-            element.value = value ?? "";
+            
+            if (element.type === "list") {
+                //alert("fFillPage: filling list for field:", sField, "with value:", value, "and options:", dct["dct" + fCapitalizeFirst(sField)]);
+                const dctOptions = dct["dct" + fCapitalizeFirst(sField)];
+                //console.log("fFillPage: filling list for field:", sField, "with value:", value, "and options:", dctOptions);
+                element.value = fGetDctValuesByKeyList(dctOptions, value).join(", ");
+            } else {
+                //alert("fFillPage: filling field:", sField, "with value:", value);
+                element.value = value ?? "";
+            }
         });
 
     // fills text content of elements with data-text attribute
@@ -155,7 +166,7 @@ function fFillPage(page, dct) {
 
             const sField = element.dataset.text;
             //if (!(sField in dct)) {return};
-            const value = fGetDctValueByKey(dct, sField);
+            const value = fGetDctValueByKey(dct, sField, "");
             element.textContent = value ?? "";
         });
 
@@ -219,23 +230,23 @@ function togglePassword(sInputId, btn) {
 window.togglePassword = togglePassword;
 
 function fIsAdmin() {
-    return appState.dctEmpl.role === "Admin";
+    return appUser.current.role === "Admin";
 }
 
 function fIsManager() {
-    return appState.dctEmpl.role === "Mngr";
+    return appUser.current.role === "Mngr";
 }
 
 function fIsDeputy() {
-    return appState.dctEmpl.role === "Dpty";
+    return appUser.current.role === "Dpty";
 }
 
 function fCanManageDepartment(sDepartment) {
     return (
         fIsAdmin()
         || (
-            ["Mngr", "Dpty"].includes(appState.dctEmpl.role)
-            && appState.dctEmpl.department === sDepartment
+            ["Mngr", "Dpty"].includes(appUser.current.role)
+            && appUser.current.department === sDepartment
         )
     );
 }
@@ -244,7 +255,7 @@ function fCanManageDepartment(sDepartment) {
 // This function retrieves documents from a specified Firestore collection and constructs a dictionary mapping document IDs to their descriptions. 
 // It takes one parameter, sCollectionName, which is the name of the Firestore collection to query. The function returns a dictionary where the keys are document IDs and the values are the corresponding descriptions from the documents. If an error occurs during the retrieval process, it logs the error to the console and displays an error message using the fShowMsg function.
 async function fGetVDctFromCollection(sCollectionName) {
-    //alert(appState.department);
+    //alert(appUser.current.department);
     const dct = {};
 
     //alert("Loading code descriptions for: " + sCollectionName);
@@ -254,7 +265,7 @@ async function fGetVDctFromCollection(sCollectionName) {
         snapshot = await getDocs(query(
             collection(db,sCollectionName),
             where("active", "==", true),
-            where("department", "==", appState.department),
+            where("department", "==", appUser.current.department),
             orderBy("sortOrder", "asc")
         ));
 
@@ -284,7 +295,7 @@ async function fGetDctFromDoc(sCollectionName, sDocumentId) {
 
     //console.log("fGetDctFromDoc: collection:", sCollectionName, "document ID:", sDocumentId);
     try {
-        const docRef = doc(db,sCollectionName,sDocumentId);
+        const docRef = doc(db,sCollectionName, sDocumentId);
         const docSnap = await getDoc(docRef);
         if (!docSnap.exists()) {return null;}
 
@@ -298,10 +309,46 @@ async function fGetDctFromDoc(sCollectionName, sDocumentId) {
 }
 window.fGetDctFromDoc = fGetDctFromDoc;
 
-function fGetDctValueByKey(dct, key) {
-    return dct[key] || key;
+function fGetDctValueByKey(dct, key, returnValueIfNotFound = '') {
+    return dct[key] || (returnValueIfNotFound === '#key' ? key : returnValueIfNotFound);
 }
 window.fGetDctValueByKey = fGetDctValueByKey;
+
+function fGetDctValuesByKeyList(dct, lstKeys, fieldName, returnValueIfNotFound = '') {
+    if (typeof lstKeys === "string") {
+        lstKeys = [lstKeys];
+    }
+    if (!dct || !lstKeys || lstKeys.length === 0) {
+        return "";
+    }
+    const lstValues = [];
+    if (!lstKeys || lstKeys.length === 0) {
+        return "";
+    }
+    lstKeys.forEach(function(key) {
+        //alert("Processing key: " + key + " in dct: " + JSON.stringify(dct, null, 2));
+        const dctEntry = fGetDctValueByKey(dct, key, null);
+        //alert("Found entry for key: " + key + " - " + JSON.stringify(dctEntry, null, 2));
+        if (dctEntry) {
+            lstValues.push(fGetDctValueByKey(dctEntry, fieldName, returnValueIfNotFound));
+            // return;
+        } 
+        // lstValues.push(fGetDctValueByKey(dct, key, returnValueIfNotFound));
+    });
+    //alert("Collected values for keys: " + JSON.stringify(lstKeys) + " - " + JSON.stringify(lstValues));
+    return lstValues;
+}
+window.fGetDctValuesByKeyList = fGetDctValuesByKeyList;
+
+function fGetKeyByDctValue(dct, value, returnValueIfNotFound = '#value') {
+    for (const [k, v] of Object.entries(dct)) {
+        if (v === value) {
+            return k;
+        }
+    }
+    return returnValueIfNotFound === '#value' ? value : returnValueIfNotFound;
+}
+window.fGetKeyByDctValue = fGetKeyByDctValue;
 
 function fRemoveKeyFromDct(dct, key) {
     //alert("Removing key: " + key + " from dct: " + JSON.stringify(dct, null, 2));
@@ -332,47 +379,25 @@ function fGetEditablePageData() {
                 dctData[sField] = element.value === "" ? null : Number(element.value);
                 return;
             }
+            //alert("sField: " + sField + ", value: " + element.value);
             dctData[sField] = element.value;
         });
-
+    //alert("Collected editable page data: " + JSON.stringify(dctData, null, 2));
     return dctData;
 }
 window.fGetEditablePageData = fGetEditablePageData;
 
 
 
-async function fSaveDctToCollectionsmazat(sCollection, dctFormData, sDocId = null, bPublish = false) {
 
-    const dctData = fGetEditablePageData();
-    const validation = fCheckEmployeeProfileData(dctData);
-    if (!validation.valid) {
-        await fShowMsg("err", validation.message);
-        return;
-    }
-    // alert("Data to save: " + JSON.stringify(dctData, null, 2));
-    // return;
-
-    const sEmployeeId = String(appState.dctEmpl.code);
-    
-    dctData.updated_at = serverTimestamp();
-    dctData.profile_saved = true;
-    await updateDoc(doc(db, "employees", sEmployeeId),dctData);
-
-    appState.dctEmpl = {
-        ...appState.dctEmpl,
-        ...dctData
-    };
-
-    await fShowMsg("succ", `Profil uživatele ${appState.dctEmpl.description} byl uložen.`);
-}
 // combines existing data with new data from form, updates the document in Firestore
 async function fSaveDctToCollection(sCollection, dctBaseData, dctFormData, sDocId = null, bPublish = false, bClose = false) {
-    console.log("fSaveDctToCollection: collection:", sCollection, "base data:", dctBaseData, "form data:", dctFormData, "doc ID:", sDocId, "publish:", bPublish, "close:", bClose);
+    //console.log("fSaveDctToCollection: collection:", sCollection, "base data:", dctBaseData, "form data:", dctFormData, "doc ID:", sDocId, "publish:", bPublish, "close:", bClose);
     dctFormData = {...dctBaseData, ...dctFormData, };
     sDocId = sDocId || String(fGetDctValueByKey(dctFormData, "code")) || String(fGetDctValueByKey(dctBaseData, "code"));
 
     dctFormData.updated_at = serverTimestamp();
-    dctFormData.updated_by = appState.dctEmpl.code;
+    dctFormData.updated_by = appUser.current.code;
     dctFormData.published = bPublish;
     dctFormData.closed = bClose;
       
@@ -398,29 +423,24 @@ window.fDctToLst = fDctToLst;
 
 
 async function fPickSelection(element, sTitle, lstChoices = [], lstInOut, maxSelected = 1) {
-    //alert("fPickSelection");
-    // console.log("element", element);
-    // console.log("appState", appState);
-    // alert("element: " + element.dataset.options);
-    // alert("appState: " + JSON.stringify(appState));
-    //const options = appState[element.dataset.options];
-    // alert("options: " + JSON.stringify(options));            
-    const selectedIds = await fShowChoiceModal(
-        element.dataset.title || "Vyberte položky",
+    //console.log("fPickSelection: element:", element, "title:", sTitle, "choices:", lstChoices, "initial selection:", lstInOut, "max selected:", maxSelected);
+    const dctSelected = await fShowChoiceModal(
+        sTitle,
         lstChoices,
         lstInOut ?? [],
         maxSelected
     );
 
-    if (selectedIds === null) {
+    if (dctSelected === null) {
         return;
     }
 
     // appState.dctEmpl.favorites = selectedIds;
-    lstInOut = selectedIds;
+    lstInOut = dctSelected.ids;
+    //console.log("Selected IDs:", lstInOut);
 
-    const lstDesc = selectedIds.map((id) => fGetNthCol(lstChoices, id, 1));
-    element.value = lstDesc.join(", ");
+    element.value = dctSelected.descr.join(", ");
+    return lstInOut;
 }
 
 window.fPickSelection = fPickSelection;
@@ -449,6 +469,62 @@ function fCreateSortText(text) {
         .toLowerCase()
         .trim();
 }
+window.fCreateSortText = fCreateSortText;
+
+function fCapitalizeFirst(text) {
+    if (!text) {return ""}
+    return text.charAt(0).toUpperCase() + text.slice(1);
+}
+window.fCapitalizeFirst = fCapitalizeFirst;        
+
+function fIsUniqueInDct(dct, key, value) {
+    for (const [k, v] of Object.entries(dct)) {
+        if (v[key] === value) {
+            return {result: false, key: k};
+        }
+    }
+    return {result: true, key: null};
+}
+window.fIsUniqueInDct = fIsUniqueInDct;
+
+function fIsDict(value) {
+
+    return (
+        value !== null
+        && typeof value === "object"
+        && !Array.isArray(value)
+    );
+}
+window.fIsDict = fIsDict;
+
+async function fAddDctLstAndStrToDctFromCollection(sCollectionName, dctOptions, dctUser, sStrName='') {
+    const bReadFromCollection = (dctOptions === undefined || dctOptions === null)
+    const dctName = "dct" + fCapitalizeFirst(sCollectionName);
+    const optName = "opt" + dctName.substring(3);
+    const strName = sStrName || "str" + dctName.substring(3);
+    //console.log("fAddDctLstAndStrToDctFromCollection: collection:", sCollectionName, "str name:", sStrName);
     
+    //console.log("appHtml before adding:", appHtml);
+    if (!(dctName in appHtml) && bReadFromCollection) {
+        //console.log("Loading collection for:", sCollectionName);
+        appHtml[dctName] = await fGetVDctFromCollection(sCollectionName);
+        appHtml[optName] = fDctToLst(appHtml[dctName]);
+    }else{
+        //console.log("Using provided options for:", dctName, ":", dctOptions);
+        appHtml[dctName] = dctOptions;
+        appHtml[optName] = fDctToLst(appHtml[dctName]);
+    }
 
-
+    //console.log(dctName, ":", appHtml[dctName]);
+    if (sCollectionName in dctUser ) {
+        //alert(dctUser[sCollectionName]+": " + JSON.stringify(dctUser[sCollectionName], null, 2));
+        let lst = fGetDctValuesByKeyList(appHtml[dctName], dctUser[sCollectionName], "description", []);
+        appHtml[strName] = (lst.length === 0) ? "" : lst.join(", ");
+        //console.log("Získané hodnoty pro klíče", dctUser[sCollectionName], ":", lst);
+    }else{
+        //alert("dctUser does not contain key: " + sCollectionName);
+        appHtml[strName] = "";
+    }
+    //console.log("Získané hodnoty pro profil:", appHtml[strName]);
+};
+window.fAddDctLstAndStrToDctFromCollection = fAddDctLstAndStrToDctFromCollection;

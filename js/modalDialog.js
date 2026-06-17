@@ -97,13 +97,21 @@ async function fShowMsg(sModalTitle, sText) {
 }
 window.fShowMsg = fShowMsg;
 
+async function fShowMsgIfEmpty(value, valueName) {
+    if (!value) {
+        await fShowMsg("err", `${fCapitalizeFirst(valueName)} nesmí být prázdné.`);
+        return true;
+    }
+    return false;
+}
+
 async function fShowChoiceModal(
     title,
     lstChoices,
     selectedIds = [],
     maxSelected = 1
 ) {
-
+    //console.log("fShowChoiceModal maxSelected:", maxSelected, "title:", title);
     return new Promise(function(resolve) {
 
         let selected = new Set(
@@ -157,14 +165,14 @@ async function fShowChoiceModal(
                 btn.addEventListener("click", async function() {
 
                     if (maxSelected === 1) {
-
+                        //console.log("Selected code:", code);
                         selected = new Set([code]);
 
                         fCleanup();
 
                         modal.hide();
-
-                        resolve(code);
+                        
+                        resolve({ids:[code], descr: [caption]});
 
                         return;
                     }
@@ -207,7 +215,7 @@ async function fShowChoiceModal(
 
             modal.hide();
 
-            resolve(Array.from(selected));
+            resolve({ids: Array.from(selected), descr: fGetDescrFromSelected(lstChoices, Array.from(selected))});
         }
 
         function fCancel() {
@@ -233,4 +241,12 @@ async function fShowChoiceModal(
         modal.show();
     });
 }
+
+function fGetDescrFromSelected(lstChoices, selectedIds) {
+    const selectedSet = new Set(selectedIds.map(String));
+    return lstChoices
+        .filter(row => selectedSet.has(String(row[0])))
+        .map(row => row[1]);
+}
+window.fGetDescrFromSelected = fGetDescrFromSelected;
 

@@ -10,7 +10,9 @@ import {
     where,
     getDocs,
     fGetFirebaseErrorCz,
-    appState,
+    appUser,
+    appHtml,
+    appFormValues,
 } from "./firebase.js";
 
 auth.languageCode = "cs";
@@ -135,7 +137,7 @@ window.fRegister = fRegister;
 
 async function fShowLogin() {
     //alert("fShowLogin");
-    await fShowPage("login", appState.dctEmpl);
+    await fShowPage("login", appUser.current);
 }
 window.fShowLogin = fShowLogin;
 
