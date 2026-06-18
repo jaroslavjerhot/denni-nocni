@@ -200,19 +200,20 @@ body {
     min-height: 24px;
 }
 
-.calendar-table {
+.requests-calendar-table {
     background: rgba(255,255,255,.96);
 }
 
-.calendar-table th {
+.requests-calendar-table th {
     background: var(--blue-dark);
     color: white;
     text-align: center;
 }
 
-.calendar-day {
+.requests-calendar-day {
     min-width: 80px;
     vertical-align: top;
+    
 }
 
 .day-number {
@@ -269,18 +270,19 @@ body {
     }
 
     .page-container {
-        padding: 2px;
+        padding: 1px;
     }
 
     .card-auth {
         border-radius: 12px;
     }
-    .calendar-day {
-        min-width: 90px;
+    .requests-calendar-day {
+        min-width: 80px;
         font-size: .85rem;
+        margin: 0;
     }
 
-    .calendar-table select {
+    .requests-calendar-table select {
         font-size: .8rem;
         padding: .25rem;
     }

@@ -19,16 +19,16 @@ const maxRequests = 10;
 
 const lstRequestOptionsDay = [
     ["", "Bez požadavku"],
-    ["wnt", "D: chci", "btn btn-green-lighter w-100 mb-1", "btn btn-green-darker w-100 mb-1", ],
-    ["cnt", "D: nemohu", "btn btn-red-lighter w-100 mb-1", "btn btn-red-darker w-100 mb-1"],
-    ["hld", "D: dovolená", "btn btn-yellow-lighter w-100 mb-1", "btn btn-yellow-darker w-100 mb-1"],
-    ["sck", "D: nemoc/očr", "btn btn-blue2-lighter w-100 mb-1", "btn btn-blue2-darker w-100 mb-1"],
+    ["wnt", "chci", "btn btn-green-lighter w-100 mb-1", "btn btn-green-darker w-100 mb-1", ],
+    ["cnt", "nemohu", "btn btn-red-lighter w-100 mb-1", "btn btn-red-darker w-100 mb-1"],
+    ["hld", "dovol", "btn btn-yellow-lighter w-100 mb-1", "btn btn-yellow-darker w-100 mb-1"],
+    ["sck", "nem/očr", "btn btn-blue2-lighter w-100 mb-1", "btn btn-blue2-darker w-100 mb-1"],
   ];
 
 const lstRequestOptionsNight = [
     ["", "Noční"],
-    ["wnt", "N: chci", "btn btn-green-lighter w-100 mb-1", "btn btn-green-darker w-100 mb-1"],
-    ["cnt", "N: nemohu", "btn btn-red-lighter w-100 mb-1", "btn btn-red-darker w-100 mb-1"],
+    ["wnt", "N:chci", "btn btn-green-lighter w-100 mb-1", "btn btn-green-darker w-100 mb-1"],
+    ["cnt", "N:nemohu", "btn btn-red-lighter w-100 mb-1", "btn btn-red-darker w-100 mb-1"],
 ];
 
 appHtml.optRequests = lstRequestOptionsDay;
@@ -95,14 +95,14 @@ function fRenderRequestsCalendar() {
             const td = document.createElement("td");
 
             if ((week === 0 && weekday < firstWeekday) || day > daysInMonth) {
-                td.className = "calendar-day empty-day";
+                td.className = "requests-calendar-day empty-day";
                 tr.appendChild(td);
                 continue;
             }
 
             const date = new Date(year, month - 1, day);
 
-            td.className = "calendar-day";
+            td.className = "requests-calendar-day";
 
             if (isWeekend(date)) {
                 td.classList.add("weekend-day");
@@ -336,6 +336,7 @@ window.sameDate = sameDate;
 async function fPickShift(element) {
     //if (!appFormValues.userProfile.deputies){ appFormValues.userProfile.deputies = []; }
     const shiftId = element.dataset.shift;
+    const sDayNight = shiftId.slice(-1).toUpperCase();
     const shiftDescription = element.dataset.descr;
     const requestValue = fGetDctValueByKey(appFormValues.userRequests, shiftId, '');
     appFormValues.userRequests[shiftId] = 
@@ -344,14 +345,23 @@ async function fPickShift(element) {
     // if Bez požadavku is selected, set the value to empty string
     appFormValues.userRequests[shiftId] = appFormValues.userRequests[shiftId][0]
     console.log("fPickShift - appFormValues.userRequests:", appFormValues.userRequests);
+    
+    // if no requests sets field to empty string, otherwise sets it to sDayNight + ":" + value
     if (appFormValues.userRequests[shiftId] === '') {
-        document.getElementById(shiftId).value = "";}
+        element.value = "";
+    } else {
+        element.value = sDayNight + ":" + element.value;
+    }
 
     // nastavi barvu pole podle treti hodnoty v optRequests pro dany shift
     let sElementColorClass = fGetNthCol(lstRequestOptionsDay, [appFormValues.userRequests[shiftId]], 2);
     sElementColorClass = sElementColorClass.split(" ")[1]; // get first class if there are multiple classes
-    console.log("fPickShift - sElementColorClass:", sElementColorClass);
-    element.classList.add(sElementColorClass);
-    
+    console.log("Orig sElementColorClass:", element.classList);
+    //console.log("New sElementColorClass:", sElementColorClass);
+    const classArray = Array.from(element.classList);
+    if (classArray.length === 3){element.classList.remove(classArray[2]);}
+    if (sElementColorClass) {element.classList.add(sElementColorClass);}
+    console.log("New sElementColorClass:", element.classList);
+    //console.log(`appFormValues.userRequests[${shiftId}]:`, appFormValues.userRequests[shiftId], document.getElementById(shiftId).value);
 }
 window.fPickShift = fPickShift;
