@@ -167,7 +167,8 @@ function fFillPage(page, dct) {
             const sField = element.dataset.text;
             //if (!(sField in dct)) {return};
             const value = fGetDctValueByKey(dct, sField, "");
-            element.textContent = value ?? "";
+            //element.textContent = value ?? "";
+            element.innerHTML = value ?? "";
         });
 
     // unhides elements with data-visible attribute if the corresponding field in dct is false
@@ -530,3 +531,10 @@ async function fAddDctLstAndStrToDctFromCollection(sCollectionName, dctOptions, 
     //console.log("Získané hodnoty pro profil:", appHtml[strName]);
 };
 window.fAddDctLstAndStrToDctFromCollection = fAddDctLstAndStrToDctFromCollection;
+
+function fGetNumberOfWeek(date) {
+    const firstThursday = new Date(date.getFullYear(), 0, 4);
+    const pastDaysOfYear = (date - firstThursday) / 86400000;
+    return Math.ceil((pastDaysOfYear + firstThursday.getDay() + 1) / 7)+1;
+}
+window.fGetNumberOfWeek = fGetNumberOfWeek;

@@ -213,7 +213,6 @@ body {
 .requests-calendar-day {
     min-width: 80px;
     vertical-align: top;
-    
 }
 
 .day-number {
@@ -221,6 +220,18 @@ body {
     color: var(--blue-middle);
     margin-bottom: 6px;
 }
+.requests-calendar-weeknum {
+    min-width: 20px;
+    font-size: .85rem;
+    background: var(--blue-light);
+    font-weight: 700;
+    color: var(--blue-dark);
+    vertical-align: middle;
+    margin: 0;
+}
+
+
+
 
 .weekend-day {
     /* background: rgba(16,185,129,.12) !important; */
@@ -276,6 +287,7 @@ body {
     .card-auth {
         border-radius: 12px;
     }
+    
     .requests-calendar-day {
         min-width: 80px;
         font-size: .85rem;
@@ -283,7 +295,7 @@ body {
     }
 
     .requests-calendar-table select {
-        font-size: .8rem;
+        font-size: .85rem;
         padding: .25rem;
     }
 }

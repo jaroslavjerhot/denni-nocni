@@ -53,7 +53,7 @@ async function fShowUserRequestsPage(dctEditedUser) {
     appHtml.titPage = "Požadavky na směny";
     appFormValues.userRequests = {}
     
-    console.log("fShowUserRequestsPage - dctEditedUser:", dctEditedUser);
+    //console.log("fShowUserRequestsPage - dctEditedUser:", dctEditedUser);
     await fShowPage("userRequests", {...dctEditedUser, ...appHtml});
     const pageRequests = document.getElementById("pageRequests");
     const monthSelect = document.getElementById("requestMonth");
@@ -90,9 +90,18 @@ function fRenderRequestsCalendar() {
 
     for (let week = 0; week < 6; week++) {
         const tr = document.createElement("tr");
-// ctreates 7 days in week on top of calendar
-        for (let weekday = 1; weekday <= 7; weekday++) {
+// creates weekNum + 7 days in week on top of calendar
+        for (let weekday = 0; weekday <= 7; weekday++) {
             const td = document.createElement("td");
+            const weekNum = fGetNumberOfWeek(new Date(year, month - 1, day));
+
+            if (weekday === 0) {
+                td.innerText = weekNum;
+                td.classList = "requests-calendar-weeknum";
+                tr.appendChild(td);
+                continue;
+                
+            }
 
             if ((week === 0 && weekday < firstWeekday) || day > daysInMonth) {
                 td.className = "requests-calendar-day empty-day";
@@ -125,14 +134,7 @@ function fRenderRequestsCalendar() {
         }
     }
 
-    updateCounter();
-
-    document
-        .querySelectorAll(".request-select")
-        .forEach(select => {
-            select.addEventListener("change", updateCounter);
-            select.addEventListener("change", () => fChangeRequestColor(select));
-        });
+    
 }
 
 function fChangeRequestColorsmaz(select) {
@@ -156,25 +158,7 @@ function createRequestHtml(year, month, day) {
         String(day).padStart(2, "0");
 
     const dayInWeekCz = ["Ne", "Po", "Út", "St", "Čt", "Pá", "So", ][new Date(year, month - 1, day).getDay()];    
-    // return `
-    //     <div class="day-number">${dayInWeekCz} ${day}. ${month}.</div>
-
-        
-    //     <select
-    //         class="form-select form-select-sm request-select mb-2"
-    //         id="requestType"
-    //         data-shift="${dateText}-d">
-    //         ${createOptionsHtml('d')}
-    //     </select>
-
-        
-    //     <select
-    //         class="form-select form-select-sm request-select mb-3"
-    //         id="requestType"
-    //         data-shift="${dateText}-n">
-    //         ${createOptionsHtml('n')}
-    //     </select>
-    // `;
+    
     const sDate = `${dayInWeekCz} ${day}. ${month}.`;
     return `
         <div class="day-number">${sDate}</div>
@@ -199,23 +183,34 @@ function createOptionsHtml(sDayNight){
 }
 window.createOptionsHtml = createOptionsHtml;
 
-function updateCounter() {
-    const count = getSelectedRequests().length;
+function fUpdateCounter(lstRequestOptions=null) {
+    // counts in appFormValues.userRequests the number of values that are not empty string and updates the counter in requestCounter element
+    let iCount = 0;
+    for (const key in appFormValues.userRequests) {
+        if ((lstRequestOptions ? 
+            lstRequestOptions.includes(appFormValues.userRequests[key]) : 
+            appFormValues.userRequests[key] !== '')) {
+            iCount++;
+        }
+    }
 
+    
+    console.log("fUpdateCounter - count:", iCount);
     requestCounter.innerHTML =
-        `Počet zadaných požadavků: <strong>${count}</strong> z ${maxRequests}`;
+        `Počet zadaných požadavků: <strong>${iCount}</strong> z ${maxRequests}`;
 
-    if (count > maxRequests) {
+    if (iCount > maxRequests) {
         requestCounter.className = "text-danger text-center mb-3";
     } else {
         requestCounter.className = "text-success text-center mb-3 c-blue-darker";
     }
 }
-window.updateCounter = updateCounter;
+window.fUpdateCounter = fUpdateCounter;
 
-function getSelectedRequests() {
+function getSelectedRequests(lstRequestOptions=null) {
     return Array.from(document.querySelectorAll(".request-select"))
-        .filter(select => select.value !== "")
+        .filter(select => 
+            (lstRequestOptions ? lstRequestOptions.includes(select.value) : select.value !== ""))
         .map(select => ({
             date: select.dataset.date,
             shift: select.dataset.shift,
@@ -344,7 +339,7 @@ async function fPickShift(element) {
             appHtml.optRequests, requestValue, 1);
     // if Bez požadavku is selected, set the value to empty string
     appFormValues.userRequests[shiftId] = appFormValues.userRequests[shiftId][0]
-    console.log("fPickShift - appFormValues.userRequests:", appFormValues.userRequests);
+    //console.log("fPickShift - appFormValues.userRequests:", appFormValues.userRequests);
     
     // if no requests sets field to empty string, otherwise sets it to sDayNight + ":" + value
     if (appFormValues.userRequests[shiftId] === '') {
@@ -356,12 +351,19 @@ async function fPickShift(element) {
     // nastavi barvu pole podle treti hodnoty v optRequests pro dany shift
     let sElementColorClass = fGetNthCol(lstRequestOptionsDay, [appFormValues.userRequests[shiftId]], 2);
     sElementColorClass = sElementColorClass.split(" ")[1]; // get first class if there are multiple classes
-    console.log("Orig sElementColorClass:", element.classList);
+    //console.log("Orig sElementColorClass:", element.classList);
     //console.log("New sElementColorClass:", sElementColorClass);
     const classArray = Array.from(element.classList);
     if (classArray.length === 3){element.classList.remove(classArray[2]);}
     if (sElementColorClass) {element.classList.add(sElementColorClass);}
-    console.log("New sElementColorClass:", element.classList);
+    //console.log("New sElementColorClass:", element.classList);
     //console.log(`appFormValues.userRequests[${shiftId}]:`, appFormValues.userRequests[shiftId], document.getElementById(shiftId).value);
+    
+    // saves values to appFormValues.userRequests and updates the value of the input field
+    
+
+    //update counter of selected requests with values that are not empty string
+    fUpdateCounter(['wnt', 'cnt']); 
+
 }
 window.fPickShift = fPickShift;
