@@ -14,8 +14,11 @@ import {
     appFormValues,
 } from "./firebase.js";
 
-async function fShowUserProfilePage(dctEditedUser, bCheckAndPublish = true) {
+async function fShowUserProfilePage(dctEditedUser = null, bCheckAndPublish = true) {
     
+    console.log("fShowUserProfilePage: dctEditedUser:", dctEditedUser, "bCheckAndPublish:", bCheckAndPublish);
+    
+
     // uprava telefonu
     dctEditedUser.phone = String(dctEditedUser.phone ?? "");
     

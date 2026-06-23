@@ -89,7 +89,8 @@ async function fLogin() {
 
         // await fShowMsg("success","Přihlášení bylo úspěšné. Vítejte, " + (appUser.current.surname || "neznámý uživateli") + "!");
         appUser.edited = {...appUser.current};
-        
+        // if the user has not yet published his profile, show the profile page for editing, 
+        // otherwise show the user requests page for the next month
         if (!appUser.edited.profilePublished) {
             
             //console.log("appUser.edited:", appUser.edited);
@@ -97,12 +98,13 @@ async function fLogin() {
             //await fShowMsg("warn", "Nejprve doplňte a uložte svůj profil.");
             return;
         } else {
-            //const dctTitle = {'profileTitle': "Požadavky na směny"};
-            
-            await fShowUserRequestsPage(appUser.edited);
-            //await fShowPage("requests",{...dctTitle, ...dctTitle2, ...appCurrentUser, ...appState});
-            //alert("Přihlášení bylo úspěšné. Vítejte, " + (appCurrentUser.surname || "neznámý uživateli") + "!");
-            //await fInitRequestsPage();
+
+            const sRequestId =  fGetMonthAhead() + "_" + appUser.edited.code;
+            const dctUserRequests = await fGetDctFromDoc("userRequests", sRequestId);
+            //console.log("sRequestId:", sRequestId);
+            //console.log("dctUserRequests:", dctUserRequests);
+            await fShowUserRequestsPage(appUser.edited, dctUserRequests);
+
             return;
         }
 

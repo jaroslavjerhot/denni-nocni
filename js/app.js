@@ -6,6 +6,7 @@ import {
     appFormValues, 
     collection, getDocs, query, where, orderBy, doc, getDoc, 
     updateDoc,
+    setDoc,
     serverTimestamp,
     fGetFirebaseErrorCz
 } from "./firebase.js";
@@ -124,7 +125,7 @@ function fFillPage(page, dct) {
     //alert("page html: " + page.innerHTML.includes("data-value") );
     //alert("data fields: " + JSON.stringify(page.querySelectorAll("[data-value]")) );
     //alert("appState[dctDepartments]: " + JSON.stringify(dct["dctDepartments"], null, 2));
-    //alert("dct: " + JSON.stringify(dct, null, 2));
+    //console.log("dct: " + JSON.stringify(dct, null, 2));
     page
         .querySelectorAll("[data-value]")
         .forEach(function(element) {
@@ -395,18 +396,21 @@ window.fGetEditablePageData = fGetEditablePageData;
 async function fSaveDctToCollection(sCollection, dctBaseData, dctFormData, sDocId = null, bPublish = false, bClose = false) {
     //console.log("fSaveDctToCollection: collection:", sCollection, "base data:", dctBaseData, "form data:", dctFormData, "doc ID:", sDocId, "publish:", bPublish, "close:", bClose);
     dctFormData = {...dctBaseData, ...dctFormData, };
-    console.log("fSaveDctToCollection: combined data:", dctFormData);
+    
     sDocId = sDocId || String(fGetDctValueByKey(dctFormData, "code")) || String(fGetDctValueByKey(dctBaseData, "code"));
 
     dctFormData.updated_at = serverTimestamp();
     dctFormData.updated_by = appUser.current.code;
     dctFormData.published = bPublish;
     dctFormData.closed = bClose;
-      
-    await updateDoc(doc(db, sCollection, sDocId), dctFormData);
+    
+    console.log("fSaveDctToCollection: combined data:", dctFormData);
+    
+    // await updateDoc(doc(db, sCollection, sDocId), dctFormData);
+    await setDoc(doc(db, sCollection, sDocId), dctFormData, { merge: true });
 
     console.log("fSaveDctToCollection: updated document:", sDocId, "in collection:", sCollection, "with data:", dctFormData);
-    localStorage.setItem(sCollection + "_" + sDocId, JSON.stringify(dctFormData));
+    //localStorage.setItem(sCollection + "_" + sDocId, JSON.stringify(dctFormData));
 
     await fShowMsg("succ", `Uloženo.`);
 }
@@ -449,9 +453,11 @@ window.fPickSelection = fPickSelection;
 
 
 function fGetNthCol(lst, lstIds, n) {
+    
     if (!lstIds || lstIds.length === 0) {
         return "";
-    }   
+    }
+    //console.log("fGetNthCol: lst:", lst, "lstIds:", lstIds, "n:", n);   
     for (const row of lst) {
         if (lstIds.includes(row[0])) {
             return row[n] ?? "";
@@ -538,3 +544,31 @@ function fGetNumberOfWeek(date) {
     return Math.ceil((pastDaysOfYear + firstThursday.getDay() + 1) / 7)+1;
 }
 window.fGetNumberOfWeek = fGetNumberOfWeek;
+
+function fGetMonthAhead(iDays=0) {
+    const dt = new Date();
+    // today + iDays. if iDays = 0, then return number of days in current month, so that the next month is returned
+    
+    if (iDays===0) {
+        iDays = new Date(dt.getFullYear(), dt.getMonth() + 1, 0).getDate();
+    }
+    dt.setDate(dt.getDate() + iDays);
+    
+    return dt.getFullYear() + "-" + String(dt.getMonth() + 1).padStart(2, "0");
+}
+window.fGetMonthAhead = fGetMonthAhead;
+
+// menu
+function fShowUserProfileFromMenu() {
+    fShowUserProfilePage(appUser.edited, true);
+}
+window.fShowUserProfileFromMenu = fShowUserProfileFromMenu;
+
+function fShowUserRequestsFromMenu() {
+    const sRequestId =  fGetMonthAhead() + "_" + appUser.edited.code;
+    fGetDctFromDoc("userRequests", sRequestId)
+        .then(function(dctUserRequests) {
+            fShowUserRequestsPage(appUser.edited, dctUserRequests);
+        });
+}
+window.fShowUserRequestsFromMenu = fShowUserRequestsFromMenu;

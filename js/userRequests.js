@@ -37,21 +37,14 @@ appHtml.optRequests = lstRequestOptionsDay;
 //document.getElementById("requestMonth").addEventListener("change", fRenderCalendar);
 
 
-function fGetMonthAhead(iDays=0) {
-    const dt = new Date();
-    // today + iDays
-    if (iDays===0) {
-        iDays = new Date(dt.getFullYear(), dt.getMonth() + 1, 0).getDate();
-    }
-    dt.setDate(dt.getDate() + iDays);
-    
-    return dt.getFullYear() + "-" + String(dt.getMonth() + 1).padStart(2, "0");
-}
 
-async function fShowUserRequestsPage(dctEditedUser) {
+
+async function fShowUserRequestsPage(dctEditedUser, dctUserRequests = {}) {
     appHtml.titUser = dctEditedUser.description;
     appHtml.titPage = "Požadavky na směny";
-    appFormValues.userRequests = {}
+    appFormValues.userRequests = {...dctUserRequests};
+
+
     
     //console.log("fShowUserRequestsPage - dctEditedUser:", dctEditedUser);
     await fShowPage("userRequests", {...dctEditedUser, ...appHtml});
@@ -60,12 +53,13 @@ async function fShowUserRequestsPage(dctEditedUser) {
 
     monthSelect.value = fGetMonthAhead();
 
-    fRenderRequestsCalendar();
+
+    await fRenderRequestsCalendar(appFormValues.userRequests);
 }
 window.fShowUserRequestsPage = fShowUserRequestsPage;
 
 
-function fRenderRequestsCalendar() {
+async function fRenderRequestsCalendar(dctUserRequests) {
     const monthSelect = document.getElementById("requestMonth");
     const calendarBody = document.getElementById("calendarBody");
     
@@ -94,7 +88,7 @@ function fRenderRequestsCalendar() {
         for (let weekday = 0; weekday <= 7; weekday++) {
             const td = document.createElement("td");
             const weekNum = fGetNumberOfWeek(new Date(year, month - 1, day));
-
+            // sets week number in first column of calendar, and skips to next iteration of loop
             if (weekday === 0) {
                 td.innerText = weekNum;
                 td.classList = "requests-calendar-weeknum";
@@ -102,7 +96,7 @@ function fRenderRequestsCalendar() {
                 continue;
                 
             }
-
+            // sets empty cells for days before the first day of the month and after the last day of the month
             if ((week === 0 && weekday < firstWeekday) || day > daysInMonth) {
                 td.className = "requests-calendar-day empty-day";
                 tr.appendChild(td);
@@ -121,7 +115,12 @@ function fRenderRequestsCalendar() {
                 td.classList.add("holiday-day");
             }
 
-            td.innerHTML = createRequestHtml(year, month, day);
+            td.innerHTML = fCreateDayForRequestsInput(year, month, day);
+            // set value of inputs from dctUserRequests if they exist, otherwise set to empty string
+            // const dayInputId = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+            // const dayInputD = td.querySelector(`#${dayInputId}-d`);
+            // const dayInputN = td.querySelector(`#${dayInputId}-n`);
+            // console.log("dayInputD", dayInputD, "dayInputN", dayInputN);
 
             tr.appendChild(td);
             day++;
@@ -131,6 +130,20 @@ function fRenderRequestsCalendar() {
 
         if (day > daysInMonth) {
             break;
+        }
+    }
+
+    // fill values from dctUserRequests into inputs
+    for (const key in dctUserRequests) {
+        const input = document.getElementById(key);
+    
+        if (input) {
+            //const sDayNight = key.slice(-1).toUpperCase();
+            //console.log("fRenderRequestsCalendar - key:", key, "sDayNight:", sDayNight, "value:", dctUserRequests[key]);
+            const sShiftValue = fGetNthCol(lstRequestOptionsDay, [dctUserRequests[key]], 1);
+            //console.log("fRenderRequestsCalendar - sShiftValue:", sShiftValue);
+            input.value = sShiftValue;
+            await fPickShift(input, false);
         }
     }
 
@@ -151,7 +164,8 @@ function fChangeRequestColorsmaz(select) {
 window.fRenderRequestsCalendar = fRenderRequestsCalendar;
 
 
-function createRequestHtml(year, month, day) {
+function fCreateDayForRequestsInput(year, month, day) {
+    //console.log("appFormValues.userRequests:", appFormValues.userRequests)
     const dateText =
         year + "-" +
         String(month).padStart(2, "0") + "-" +
@@ -160,6 +174,19 @@ function createRequestHtml(year, month, day) {
     const dayInWeekCz = ["Ne", "Po", "Út", "St", "Čt", "Pá", "So", ][new Date(year, month - 1, day).getDay()];    
     
     const sDate = `${dayInWeekCz} ${day}. ${month}.`;
+
+    // sets value of inputs from appFormValues.userRequests if they exist, otherwise set to empty string
+    const sDayShiftValue = fGetDctValueByKey(appFormValues.userRequests, dateText + "-d", '');
+    const sNightShiftValue = fGetDctValueByKey(appFormValues.userRequests, dateText + "-n", '');
+
+    // // sets color class of inputs from lstRequestOptionsDay and lstRequestOptionsNight if they exist, otherwise set to empty string
+    // const sDayColorClass = fGetNthCol(lstRequestOptionsDay, sDayShiftValue, 2);
+    // const sNightColorClass = fGetNthCol(lstRequestOptionsNight, sNightShiftValue, 2);
+    
+    const sDayText = (sDayShiftValue) ? 'D:' + fGetNthCol(lstRequestOptionsDay, [sDayShiftValue], 1) : '';
+    const sNightText = (sNightShiftValue) ? 'N:' + fGetNthCol(lstRequestOptionsNight, [sNightShiftValue], 1) : '';
+   
+
     return `
         <div class="day-number">${sDate}</div>
 
@@ -167,12 +194,12 @@ function createRequestHtml(year, month, day) {
             data-value="${dateText}-d" data-action="fPickShift"
             data-shift="${dateText}-d" data-descr="${sDate} - denní">
         
-            <input id="${dateText}-n" class="form-control shift-input" readonly 
+        <input id="${dateText}-n" class="form-control shift-input" readonly         
             data-value="${dateText}-n" data-action="fPickShift" 
             data-shift="${dateText}-n" data-descr="${sDate} - noční">       
     `;
 }
-window.createRequestHtml = createRequestHtml;
+window.fCreateDayForRequestsInput = fCreateDayForRequestsInput;
 
 function createOptionsHtml(sDayNight){
     let lstRequestOptions = sDayNight=='d' ? lstRequestOptionsDay : lstRequestOptionsNight;
@@ -195,7 +222,7 @@ function fUpdateCounter(lstRequestOptions=null) {
     }
 
     
-    console.log("fUpdateCounter - count:", iCount);
+    //console.log("fUpdateCounter - count:", iCount);
     requestCounter.innerHTML =
         `Počet zadaných požadavků: <strong>${iCount}</strong> z ${maxRequests}`;
 
@@ -219,39 +246,30 @@ function getSelectedRequests(lstRequestOptions=null) {
 }
 window.getSelectedRequests = getSelectedRequests;
 
-async function fSaveRequests() {
-    const requests = getSelectedRequests();
-
-    if (requests.length > maxRequests) {
-        showError("Maximum number of requests is " + maxRequests);
+async function fSaveUserRequests() {
+    //console.log("fSaveUserRequests - appFormValues.userRequests:", appFormValues.userRequests);
+    if (Object.keys(appFormValues.userRequests).length === 0) {
+        await fShowMsg("err", "Nezadali jste žádné požadavky. Vyberte alespoň jeden požadavek.");
         return;
     }
 
-    try {
-        const result = await callApi("saveRequests", {
-            year: Number(yearSelect.value),
-            month: Number(monthSelect.value),
-            requests: requests
-        });
+    if (Object.keys(appFormValues.userRequests).length > maxRequests) {
+        await fShowMsg("err", "Překročil jste maximální počet požadavků. Maximální počet je " + maxRequests);
+        return;
+    }
 
-        if (!result.ok) {
-            showError(result.error);
-            return;
-        }
-
-        msg.className = "text-success text-center mt-3 c-blue-darker";
-        msg.innerText = "Požadavky uloženy";
+    try {        
+        const bPublish = event.target.dataset.publish === "true";
+        //appFormValues.userRequests.timestamp = new Date().getTime();
+        
+        await fSaveDctToCollection("userRequests", null, appFormValues.userRequests, null, bPublish, false);
 
     } catch (err) {
-        showError(err.message);
+        await fShowMsg("err", err.code + '\n' + err.message);
     }
 }
-window.fSaveRequests = fSaveRequests;
+window.fSaveUserRequests = fSaveUserRequests;
 
-function showErrorxx(text) {
-    msg.className = "text-danger text-center mt-3";
-    msg.innerText = text;
-}
 
 function isWeekend(date) {
     const d = date.getDay();
@@ -328,18 +346,22 @@ function sameDate(a, b) {
 }
 window.sameDate = sameDate;
 
-async function fPickShift(element) {
+async function fPickShift(element, bOpenSelect=true) {
     //if (!appFormValues.userProfile.deputies){ appFormValues.userProfile.deputies = []; }
     const shiftId = element.dataset.shift;
+    appFormValues.userRequests.code = shiftId.substring(0, 7) + "_" + appUser.edited.code;
+    
     const sDayNight = shiftId.slice(-1).toUpperCase();
     const shiftDescription = element.dataset.descr;
     const requestValue = fGetDctValueByKey(appFormValues.userRequests, shiftId, '');
-    appFormValues.userRequests[shiftId] = 
-        await fPickSelection(element, shiftDescription, 
-            appHtml.optRequests, requestValue, 1);
-    // if Bez požadavku is selected, set the value to empty string
-    appFormValues.userRequests[shiftId] = appFormValues.userRequests[shiftId][0]
-    //console.log("fPickShift - appFormValues.userRequests:", appFormValues.userRequests);
+    
+    if (bOpenSelect) {
+        appFormValues.userRequests[shiftId] = 
+            await fPickSelection(element, shiftDescription, 
+                appHtml.optRequests, requestValue, 1);
+        appFormValues.userRequests[shiftId] = appFormValues.userRequests[shiftId][0]
+    }    
+    // console.log("fPickShift - appFormValues.userRequests:", appFormValues.userRequests, "shiftId:", shiftId, "sDayNight:", sDayNight, "requestValue:", requestValue);
     
     // if no requests sets field to empty string, otherwise sets it to sDayNight + ":" + value
     if (appFormValues.userRequests[shiftId] === '') {

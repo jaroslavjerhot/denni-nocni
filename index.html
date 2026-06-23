@@ -37,6 +37,16 @@
 </head>
 
 <body>
+    <!-- Menu button -->
+    <button
+        class="btn btn-outline-dark app-menu-btn"
+        type="button"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#appMenu"
+        aria-controls="appMenu">
+        ☰
+    </button>
+
 
   <div id="appContent"></div>
 
@@ -112,4 +122,45 @@ document.getElementById("genericModal").addEventListener("keydown", function(eve
     }
 });
 </script>
+
+<!-- Menu off canvas -->
+ <div
+    class="offcanvas offcanvas-start c-blue-dark"
+    tabindex="-1"
+    id="appMenu">
+
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">&nbsp;</h5>
+        <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="offcanvas">
+        </button>
+    </div>
+
+    <div class="offcanvas-body">
+
+        <button
+            class="btn btn-blue-no-border w-100 mb-2"
+            data-action="fShowUserProfileFromMenu"
+            data-bs-dismiss="offcanvas">
+            Můj profil
+        </button>
+
+        <button
+            class="btn btn-blue-no-border w-100 mb-2"
+            data-action="fShowUserRequestsFromMenu"
+            data-bs-dismiss="offcanvas">
+            Moje požadavky
+        </button>
+
+        <button
+            class="btn btn-red-no-border w-100"
+            data-action="fLogout"
+            data-bs-dismiss="offcanvas">
+            Odhlásit
+        </button>
+
+    </div>
+</div>
 </body>
