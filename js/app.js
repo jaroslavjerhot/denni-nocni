@@ -150,7 +150,7 @@ function fFillPage(page, dct) {
     //alert("page html: " + page.innerHTML.includes("data-value") );
     //alert("data fields: " + JSON.stringify(page.querySelectorAll("[data-value]")) );
     //alert("appState[dctDepartments]: " + JSON.stringify(dct["dctDepartments"], null, 2));
-    //console.log("dct: " + JSON.stringify(dct, null, 2));
+    console.log("dct: " + JSON.stringify(dct, null, 2));
     page
         .querySelectorAll("[data-value]")
         .forEach(function(element) {
@@ -469,8 +469,15 @@ async function fPickSelection(element, sTitle, lstChoices = [], lstInOut, maxSel
     // appState.dctEmpl.favorites = selectedIds;
     lstInOut = dctSelected.ids;
     //console.log("Selected IDs:", lstInOut);
-
-    element.value = dctSelected.descr.join(", ");
+    // if element is textarea, split text by new lines, otherwise by comma
+    if (element.tagName === "TEXTAREA") {
+        element.value = dctSelected.descr.join("\n");
+        element.style.height = "auto";
+        element.style.height =
+            element.scrollHeight + "px";
+    } else {
+        element.value = dctSelected.descr.join(", ");
+    }
     return lstInOut;
 }
 
@@ -598,3 +605,10 @@ function fShowUserRequestsFromMenu() {
         });
 }
 window.fShowUserRequestsFromMenu = fShowUserRequestsFromMenu;
+
+function fResizeTextarea(el) {
+    el.style.height = "auto";
+    el.style.height =
+        el.scrollHeight + "px";
+}
+window.fResizeTextarea = fResizeTextarea;

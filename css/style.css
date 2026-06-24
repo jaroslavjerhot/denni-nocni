@@ -281,6 +281,12 @@ body {
     z-index: 1050;
 }
 
+.input-picker {
+    resize: none;
+    overflow: hidden;
+    cursor: pointer;
+}
+
 @media (max-width: 768px) {
 
     body {

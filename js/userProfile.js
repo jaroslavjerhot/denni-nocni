@@ -184,6 +184,7 @@ window.fPickFavoritePositions = fPickFavoritePositions;
 async function fPickFavoriteEmployees(element) {
     //if (!appFormValues.userProfile.favorites){ appFormValues.userProfile.favorites = []; }
     appFormValues.userProfile.favorites = await fPickSelection(element, "Oblíbení kolegové/yně", appHtml.optFavorites, appFormValues.userProfile.favorites, 4);
+    
 }
 window.fPickFavoriteEmployees = fPickFavoriteEmployees;
 
