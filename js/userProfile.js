@@ -28,8 +28,8 @@ async function fShowUserProfilePage(dctEditedUser = null, bCheckAndPublish = tru
     }
     await fAddDctLstAndStrToDctFromCollection("sex", appHtml.dctSex, dctEditedUser);
     
-    await fAddDctLstAndStrToDctFromCollection("spots", null, dctEditedUser);
-    await fAddDctLstAndStrToDctFromCollection("positions", null, dctEditedUser);
+    await fAddDctLstAndStrToDctFromCollection("spots", appHtml.dctSpots, dctEditedUser);
+    await fAddDctLstAndStrToDctFromCollection("positions", appHtml.dctPositions, dctEditedUser);
     
     // get employees without this employee to avoid showing the employee itself in favorites, unfavorites and deputies selection
     appHtml.dctEmployees = await fGetVDctFromCollection("employees");

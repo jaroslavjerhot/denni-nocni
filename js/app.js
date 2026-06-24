@@ -76,9 +76,34 @@ async function fLoadPages() {
     }
 }
 
+
+
 async function fShowPage(sPage, dct = {}) {
     //alert("Page loaded: " + sPage);
-    document.getElementById("appContent").innerHTML = dctPages[sPage];
+    const sMenuHtml = `<button
+        class="btn btn-outline-dark app-menu-btn"
+        type="button"
+        data-bs-toggle="offcanvas"
+        data-bs-target="#appMenu"
+        aria-controls="appMenu">
+        ☰
+    </button>`
+
+    
+    
+    // add menu to all pages except login and registration
+    if (sPage != "login" && sPage != "registration") {
+        document.getElementById("appContent").innerHTML = sMenuHtml + dctPages[sPage];
+    } else {
+        document.getElementById("appContent").innerHTML = dctPages[sPage];
+    }
+    
+    // let appPage = document.getElementById("pageContainer");
+    
+    // if (sPage != "login" && sPage != "registration") {
+    //     appPage.innerHTML = sMenuHtml + appPage.innerHTML;
+    //     // appPage.insertAdjacentHTML("afterbegin", sMenuHtml);
+    // } 
     
     //alert("Page content: " + dctPages[sPage]);
     
@@ -560,6 +585,7 @@ window.fGetMonthAhead = fGetMonthAhead;
 
 // menu
 function fShowUserProfileFromMenu() {
+    console.log("fShowUserProfileFromMenu: appUser.edited:", appUser.edited);
     fShowUserProfilePage(appUser.edited, true);
 }
 window.fShowUserProfileFromMenu = fShowUserProfileFromMenu;

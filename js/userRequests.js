@@ -220,7 +220,7 @@ function fUpdateCounter(lstRequestOptions=null) {
             iCount++;
         }
     }
-
+    appFormValues.userRequests.iRequests = iCount;
     
     //console.log("fUpdateCounter - count:", iCount);
     requestCounter.innerHTML =
@@ -246,22 +246,35 @@ function getSelectedRequests(lstRequestOptions=null) {
 }
 window.getSelectedRequests = getSelectedRequests;
 
+
+
 async function fSaveUserRequests() {
     //console.log("fSaveUserRequests - appFormValues.userRequests:", appFormValues.userRequests);
-    if (Object.keys(appFormValues.userRequests).length === 0) {
+    
+    // remove from appFormValues.userRequests all keys with empty string values
+    for (const key in appFormValues.userRequests) {
+        if (appFormValues.userRequests[key] === '') {
+            delete appFormValues.userRequests[key];
+        }
+    }
+
+    // checks if there are any requests in appFormValues.userRequests, if not shows error message and returns
+    if (appFormValues.userRequests.iRequests === 0) {
         await fShowMsg("err", "Nezadali jste žádné požadavky. Vyberte alespoň jeden požadavek.");
         return;
     }
 
-    if (Object.keys(appFormValues.userRequests).length > maxRequests) {
+    // checks if there are more than maxRequests in appFormValues.userRequests, if so shows error message and returns
+    if (appFormValues.userRequests.iRequests > maxRequests) {
+        console.log("fSaveUserRequests - appFormValues.userRequests:", appFormValues.userRequests);
         await fShowMsg("err", "Překročil jste maximální počet požadavků. Maximální počet je " + maxRequests);
         return;
     }
 
-    try {        
-        const bPublish = event.target.dataset.publish === "true";
-        //appFormValues.userRequests.timestamp = new Date().getTime();
+    // sets bPublish to true if the user clicked to button with data-publish="true", otherwise sets to false
+    const bPublish = event.target.dataset.publish === "true";
         
+    try {        
         await fSaveDctToCollection("userRequests", null, appFormValues.userRequests, null, bPublish, false);
 
     } catch (err) {
