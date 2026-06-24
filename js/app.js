@@ -15,9 +15,9 @@ import "./registration.js";
 import "./userRequests.js";
 import "./modalDialog.js";
 import "./userProfile.js";
-
-
-
+import "./spotsList.js";
+import "./shiftsPlanner.js";
+import "./usersList.js";
 
 let dctPages = {};
 
@@ -62,6 +62,9 @@ async function fLoadPages() {
         "registration",
         "userRequests",
         "userProfile",
+        "spotsList",
+        "shiftsPlanner",
+        "usersList"
     ];
     
     for (const sPage of lstPages) {
@@ -150,7 +153,7 @@ function fFillPage(page, dct) {
     //alert("page html: " + page.innerHTML.includes("data-value") );
     //alert("data fields: " + JSON.stringify(page.querySelectorAll("[data-value]")) );
     //alert("appState[dctDepartments]: " + JSON.stringify(dct["dctDepartments"], null, 2));
-    console.log("dct: " + JSON.stringify(dct, null, 2));
+    //console.log("dct: " + JSON.stringify(dct, null, 2));
     page
         .querySelectorAll("[data-value]")
         .forEach(function(element) {
@@ -167,6 +170,8 @@ function fFillPage(page, dct) {
 
             if (element.tagName === "SELECT") {
                 //console.log("fFillPage:", sField, "with value:", value, "and options:", dct[sField]);
+                
+                console.log("SELECT for field:", sField, "with value:", value);
                 const options = dct[element.dataset.options];
                 //alert("options: " + JSON.stringify(options));
                 fFillSelect(element, options, value);
@@ -175,13 +180,30 @@ function fFillPage(page, dct) {
             }
             
             if (element.type === "list") {
-                //alert("fFillPage: filling list for field:", sField, "with value:", value, "and options:", dct["dct" + fCapitalizeFirst(sField)]);
+                alert("LIST for field:", sField, "with value:", value, "and options:", dct["dct" + fCapitalizeFirst(sField)]);
                 const dctOptions = dct["dct" + fCapitalizeFirst(sField)];
+                const lstValues = fGetDctValuesByKeyList(dctOptions, value, "description", "");
                 //console.log("fFillPage: filling list for field:", sField, "with value:", value, "and options:", dctOptions);
-                element.value = fGetDctValuesByKeyList(dctOptions, value).join(", ");
+                // if element is textarea, split text by new lines, otherwise by comma
+                element.value = lstValues.join(", ");
+                
+                
+                //element.value = fGetDctValuesByKeyList(dctOptions, value).join(", ");
             } else {
                 //alert("fFillPage: filling field:", sField, "with value:", value);
-                element.value = value ?? "";
+                //console.log("ELSE for field:", sField, "with value:", value);
+                // if element is textarea, split text by new lines, otherwise by comma
+                if (value) {
+                    if (element.tagName === "TEXTAREA") {
+                        element.value = value.replaceAll(", ", "\n");
+                        element.style.height = "auto";
+                        element.style.height =
+                            element.scrollHeight + "px";
+                    } else {
+                        element.value = value;
+                    }
+                }
+    //            element.value = value ?? "";
             }
         });
 
@@ -605,6 +627,21 @@ function fShowUserRequestsFromMenu() {
         });
 }
 window.fShowUserRequestsFromMenu = fShowUserRequestsFromMenu;
+
+function fShowSpotsListFromMenu() {
+//    fShowSpotsList(appHtml.dctSpots);
+}
+window.fShowSpotsListFromMenu = fShowSpotsListFromMenu;
+
+async function fShowUsersListFromMenu() {
+    fShowUsersList(appHtml.dctUsers);
+}
+window.fShowUsersListFromMenu = fShowUsersListFromMenu;
+
+function fShowShiftsPlannerFromMenu() {
+//    fShowShiftsPlanner(appUser.edited, true);
+}
+window.fShowShiftsPlannerFromMenu = fShowShiftsPlannerFromMenu;
 
 function fResizeTextarea(el) {
     el.style.height = "auto";

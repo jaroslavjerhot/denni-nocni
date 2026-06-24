@@ -73,6 +73,8 @@ async function fLogin() {
             
         appUser.current.dctDepartment = await fGetDctFromDoc("departments", appUser.current.department);
         appUser.current.dctCompany = await fGetDctFromDoc("companys", appUser.current.dctDepartment.company);
+        appUser.current.dctUsers = await fGetDctFromDoc("employees", fGetMonthAhead() + "_" + appUser.current.code);
+        
         //console.log('appUser.current:', appUser.current);
         appHtml.titCompany = appUser.current.dctCompany.description || "";
         appHtml.titDepartment = appUser.current.dctDepartment.description || "";
