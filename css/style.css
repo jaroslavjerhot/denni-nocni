@@ -277,9 +277,7 @@ body {
 .app-menu-btn {
     /* position: fixed; */
     background: var(--blue-lighter);
-    margin: 10px;
-    top: 12px;
-    left: 12px;
+    /* margin: 10px; */
     z-index: 1050;
 }
 
@@ -307,4 +305,24 @@ body {
         font-size: .85rem;
         padding: .25rem;
     }
+
+}
+
+@media (max-width: 767.98px) {
+
+    .app-menu-btn {
+        margin-bottom: 1rem;
+    }
+
+}
+
+@media (min-width: 768px) {
+
+    .app-menu-btn {
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 1050;
+    }
+
 }
