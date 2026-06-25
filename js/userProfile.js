@@ -14,9 +14,12 @@ import {
     appFormValues,
 } from "./firebase.js";
 
-async function fShowUserProfilePage(dctEditedUser = null, bCheckAndPublish = true) {
+async function fShowUserProfilePage(dctEditedUser = null, bCheckAndPublish = true, sReturnPage = null) {
     
-    console.log("fShowUserProfilePage: dctEditedUser:", dctEditedUser, "bCheckAndPublish:", bCheckAndPublish);
+    appHtml.prevPage = appHtml.activePage;
+    appHtml.activePage = "userProfile";
+
+    //console.log("fShowUserProfilePage: dctEditedUser:", dctEditedUser, "bCheckAndPublish:", bCheckAndPublish);
     
 
     // uprava telefonu
@@ -59,7 +62,7 @@ async function fShowUserProfilePage(dctEditedUser = null, bCheckAndPublish = tru
 window.fShowUserProfilePage = fShowUserProfilePage;
 
 // saves employee profile data to Firestore, after checking the data for validity
-async function fSaveUserProfile() {
+async function fSaveUserProfile(sReturnPage = null) {
     // alert("editablePageData: " + JSON.stringify(fGetEditablePageData(), null, 2));
     // alert("appFormValues.userProfile: " + JSON.stringify(appFormValues.userProfile, null, 2));
     appFormValues.userProfile = {...appFormValues.userProfile, ...fGetEditablePageData()};
@@ -82,8 +85,15 @@ async function fSaveUserProfile() {
         await fSaveDctToCollection("employees", appUser.edited, appFormValues.userProfile, null, false, false);
 
     }
+    // return to the page from which the profile was opened
+    // or do nothing  if no return page is specified
+    await fGoToPage();
+
 }
 window.fSaveUserProfile = fSaveUserProfile;
+
+
+
 
 // checks employee profile data for validity, returns true if valid, false otherwise
 async function fValidateUserProfile(dctData) {

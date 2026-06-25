@@ -23,12 +23,7 @@ let dctPages = {};
 
 
 async function fStartApplication() {
-
-    await fLoadPages();
-    
         
-    //await fShowMsg("auth", auth);
-
     const user = auth.currentUser;
 // await fShowMsg("User", user);
     if (user) {
@@ -39,10 +34,52 @@ async function fStartApplication() {
     }
     else {
         //await fShowPage("login");
-        await fShowPage("login", {email: 'jaroslav.jerhot@centrum.cz'});
+        const sPage = fGetUrlParam("p") || "login";
+        const sId = fGetUrlParam("id") || "";
+        
+        if (sPage === "xusersList") {
+            await fShowUsersList();
+        } else {
+            await fShowPage(sPage, {email: 'jaroslav.jerhot@centrum.cz'});
+        }
+        
         
     }
 }
+
+
+appHtml.isDirty = false;
+
+// sets up history state and adds event listener for popstate to handle back/forward navigation
+history.replaceState({}, "", location.href);
+history.pushState({}, "", location.href);
+window.addEventListener("popstate", async function () {
+    //alert("Back or Forward");
+    if (appHtml.isDirty) {
+        //const answer = await fShowMsg("question", "Máte neuložené změny. Opravdu chcete opustit stránku?");
+        await fShowMsg("warn", "Máte neuložené změny. Nejprve je uložte nebo zrušte.");
+        // if (confirm("Máte neuložené změny. Opravdu chcete opustit stránku?")){
+    } else {
+     fGoToPage();
+    }
+});
+
+
+function fSetDirty(event) {
+    if (event.target.matches("[data-dirty]")) {
+        appHtml.isDirty = true;
+    }
+}
+
+//sets the leave page confirmation message
+window.addEventListener("beforeunload", function(event) {
+    if (!appHtml.isDirty) {
+        return;
+    }
+    event.preventDefault();
+    event.returnValue = "";
+});
+
 
 document.addEventListener(
     "DOMContentLoaded",
@@ -52,7 +89,8 @@ document.addEventListener(
         await fLoadPages();
         await fStartApplication();
 
-    }
+        
+    }   
 );
 
 async function fLoadPages() {
@@ -101,18 +139,13 @@ async function fShowPage(sPage, dct = {}) {
         document.getElementById("appContent").innerHTML = dctPages[sPage];
     }
     
-    // let appPage = document.getElementById("pageContainer");
-    
-    // if (sPage != "login" && sPage != "registration") {
-    //     appPage.innerHTML = sMenuHtml + appPage.innerHTML;
-    //     // appPage.insertAdjacentHTML("afterbegin", sMenuHtml);
-    // } 
-    
-    //alert("Page content: " + dctPages[sPage]);
-    
+       
     document.addEventListener("click", fDispatch);
     document.addEventListener("change", fDispatch);
 // document.addEventListener("input", fDispatch);
+
+    document.addEventListener("input", fSetDirty);
+    document.addEventListener("change", fSetDirty);
     
     fFillPage(document.getElementById("appContent"), dct);
 }
@@ -307,7 +340,21 @@ async function fGetVDctFromCollection(sCollectionName) {
     //alert(appUser.current.department);
     const dct = {};
 
-    //alert("Loading code descriptions for: " + sCollectionName);
+    // in first step, try to get the collection from local storage
+    const tsCollection = appFormValues.collectionsTS?.[sCollectionName];
+    if (localStorage.getItem(sCollectionName)) {
+        const dctLocal = JSON.parse(localStorage.getItem(sCollectionName));
+        const tsLocal = JSON.parse(localStorage.getItem(sCollectionName + "_TS"));
+        // console.log("fGetVDctFromCollection\nlocal storage timestamp for collection:", sCollectionName, "is:", tsLocal);
+        // console.log("fGetVDctFromCollection\nFirebase timestamp for collection:", sCollectionName, "is:", tsCollection);
+        if (tsCollection <= tsLocal) {
+            // console.log("fGetVDctFromCollection: using local storage for collection:", sCollectionName, "with timestamp:", tsLocal);
+            // console.log("fGetVDctFromCollection: local storage data:", dctLocal);
+            return dctLocal;
+        }
+    }
+
+    //console.log("fGetVDctFromCollection: fetching collection:", sCollectionName, "from Firestore");
     try {
         let snapshot = null;
         
@@ -329,6 +376,10 @@ async function fGetVDctFromCollection(sCollectionName) {
             // alert("data: " + JSON.stringify(dct, null, 2));
         });
 
+        localStorage.setItem(sCollectionName + "_TS", new Date().getTime());
+        localStorage.setItem(sCollectionName, JSON.stringify(dct));
+
+
     return dct;
 } catch (err) {
     //alert("Firebase error: " + err.code + " - " + err.message);
@@ -341,6 +392,21 @@ window.fGetVDctFromCollection = fGetVDctFromCollection;
 // description of function fGetDctFromDoc: 
 // This function retrieves a document from a specified Firestore collection using the document ID. It takes two parameters: sCollectionName (the name of the collection) and sDocumentId (the ID of the document to retrieve). The function returns an object containing the document ID and its data if the document exists, or null if it does not exist or if an error occurs during retrieval. The function also handles errors by logging them to the console and returning null.
 async function fGetDctFromDoc(sCollectionName, sDocumentId) {
+    
+    // in first step, try to get the collection from local storage
+    const tsCollection = appFormValues.collectionsTS?.[sCollectionName];
+    if (localStorage.getItem(sCollectionName)) {
+        const dctLocal = JSON.parse(localStorage.getItem(sCollectionName));
+        const tsLocal = JSON.parse(localStorage.getItem(sCollectionName + "_TS"));
+        // console.log("fGetVDctFromCollection\nlocal storage timestamp for collection:", sCollectionName, "is:", tsLocal);
+        // console.log("fGetVDctFromCollection\nFirebase timestamp for collection:", sCollectionName, "is:", tsCollection);
+        if (tsCollection <= tsLocal) {
+            //console.log("fGetDctFromDoc: using local storage for collection:", sCollectionName, "with timestamp:", tsLocal);
+            // console.log("fGetVDctFromCollection: local storage data:", dctLocal);
+            
+            return {code: sDocumentId,...fGetDctValueByKey(dctLocal, sDocumentId, null)};
+        }
+    }
 
     //console.log("fGetDctFromDoc: collection:", sCollectionName, "document ID:", sDocumentId);
     try {
@@ -451,13 +517,27 @@ async function fSaveDctToCollection(sCollection, dctBaseData, dctFormData, sDocI
     dctFormData.published = bPublish;
     dctFormData.closed = bClose;
     
-    console.log("fSaveDctToCollection: combined data:", dctFormData);
+    //console.log("fSaveDctToCollection: combined data:", dctFormData);
     
     // await updateDoc(doc(db, sCollection, sDocId), dctFormData);
     await setDoc(doc(db, sCollection, sDocId), dctFormData, { merge: true });
 
-    console.log("fSaveDctToCollection: updated document:", sDocId, "in collection:", sCollection, "with data:", dctFormData);
+    //console.log("fSaveDctToCollection: updated document:", sDocId, "in collection:", sCollection, "with data:", dctFormData);
     //localStorage.setItem(sCollection + "_" + sDocId, JSON.stringify(dctFormData));
+
+    // update the doc in local storage
+    const dctLocal = JSON.parse(localStorage.getItem(sCollection)) || {};
+    dctLocal[sDocId] = dctFormData;
+    localStorage.setItem(sCollection, JSON.stringify(dctLocal));
+    const tsLocal = new Date().getTime();
+    localStorage.setItem(sCollection + "_TS", tsLocal);
+    appFormValues.collectionsTS[sCollection] = tsLocal;
+    
+    // sets the timestamp for the collection in appFormValues.collectionsTS to the current time in milliseconds since the epoch
+    await setDoc(doc(db, "collections", "TS"), appFormValues.collectionsTS, { merge: true });
+
+    // sets the isDirty flag to false after saving the document
+    appHtml.isDirty = false;
 
     await fShowMsg("succ", `Uloženo.`);
 }
@@ -476,7 +556,7 @@ window.fDctToLst = fDctToLst;
 
 
 async function fPickSelection(element, sTitle, lstChoices = [], lstInOut, maxSelected = 1) {
-    console.log("fPickSelection: element:", element, "title:", sTitle, "choices:", lstChoices, "initial selection:", lstInOut, "max selected:", maxSelected);
+    //console.log("fPickSelection: element:", element, "title:", sTitle, "choices:", lstChoices, "initial selection:", lstInOut, "max selected:", maxSelected);
     const dctSelected = await fShowChoiceModal(
         sTitle,
         lstChoices,
@@ -634,7 +714,7 @@ function fShowSpotsListFromMenu() {
 window.fShowSpotsListFromMenu = fShowSpotsListFromMenu;
 
 async function fShowUsersListFromMenu() {
-    fShowUsersList(appHtml.dctUsers);
+    fShowUsersListPage(appHtml.dctUsers);
 }
 window.fShowUsersListFromMenu = fShowUsersListFromMenu;
 
@@ -649,3 +729,32 @@ function fResizeTextarea(el) {
         el.scrollHeight + "px";
 }
 window.fResizeTextarea = fResizeTextarea;
+
+function fGetUrlParam(sName) {
+    return new URLSearchParams(window.location.search).get(sName);
+}
+window.fGetUrlParam = fGetUrlParam;
+
+
+// returns to the specified page after saving user profile
+async function fGoToPage(sTargetPage) {
+    // if sTargetType is not string, then get it from appHtml.prevPage
+    if (typeof sTargetPage !== "string") {
+        sTargetPage = '';
+    }
+    
+    sTargetPage = sTargetPage || appHtml.prevPage || "login";
+    
+    switch (sTargetPage) {
+        case "usersList":
+            await fShowUsersListPage();
+            break;
+        case "userRequests":
+            await fShowUserRequestsPage(appUser.edited);
+            break;
+        case "login":
+            await fShowPage("login", {email: appUser.current.email});
+            break;
+    }
+}
+window.fGoToPage = fGoToPage;

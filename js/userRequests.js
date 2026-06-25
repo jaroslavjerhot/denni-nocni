@@ -44,6 +44,8 @@ async function fShowUserRequestsPage(dctEditedUser, dctUserRequests = {}) {
     appHtml.titPage = "Požadavky na směny";
     appFormValues.userRequests = {...dctUserRequests};
 
+    appHtml.prevPage = appHtml.activePage;
+    appHtml.activePage = "userRequests";
 
     
     //console.log("fShowUserRequestsPage - dctEditedUser:", dctEditedUser);
@@ -190,11 +192,11 @@ function fCreateDayForRequestsInput(year, month, day) {
     return `
         <div class="day-number">${sDate}</div>
 
-        <input id="${dateText}-d" class="form-control shift-input" readonly 
+        <input data-dirty id="${dateText}-d" class="form-control shift-input" readonly 
             data-value="${dateText}-d" data-action="fPickShift"
             data-shift="${dateText}-d" data-descr="${sDate} - denní">
         
-        <input id="${dateText}-n" class="form-control shift-input" readonly         
+        <input data-dirty id="${dateText}-n" class="form-control shift-input" readonly         
             data-value="${dateText}-n" data-action="fPickShift" 
             data-shift="${dateText}-n" data-descr="${sDate} - noční">       
     `;
@@ -280,6 +282,7 @@ async function fSaveUserRequests() {
     } catch (err) {
         await fShowMsg("err", err.code + '\n' + err.message);
     }
+    await fGoToPage();
 }
 window.fSaveUserRequests = fSaveUserRequests;
 

@@ -21,9 +21,10 @@
                 </h2>
 
                 <!-- Email -->
-                <div class="section-title c-blue-darker" data-visible="role=Mngr">Email</div>
-                <input id="email" class="form-control" placeholder="Email" data-value="email">
-
+                <div data-visible="role=Mngr">
+                <div class="section-title c-blue-darker">Email</div>
+                <input data-dirty id="email" class="form-control" placeholder="Email" data-value="email">
+                </div>
                 <!-- NAME -->
 
                 <div class="row g-2 mb-3">
@@ -32,21 +33,21 @@
 
                         <label class="form-label section-title c-blue-darker mb-0">Titul před</label>
 
-                        <input id="prefix" class="form-control" placeholder="Titul před" data-value="prefix">
+                        <input data-dirty id="prefix" class="form-control" placeholder="Titul před" data-value="prefix">
 
                     </div>
 
                     <div class="col-12 col-md-4">
 
                         <label class="form-label section-title c-blue-darker mb-0">Jméno</label>
-                        <input id="givenname" class="form-control" placeholder="Jméno" data-value="givenname">
+                        <input data-dirty id="givenname" class="form-control" placeholder="Jméno" data-value="givenname">
 
                     </div>
 
                     <div class="col-12 col-md-4">
 
                         <label class="form-label section-title c-blue-darker mb-0">Příjmení</label>
-                        <input id="surname" class="form-control" placeholder="Příjmení" data-value="surname">
+                        <input data-dirty id="surname" class="form-control" placeholder="Příjmení" data-value="surname">
 
                     </div>
 
@@ -54,7 +55,7 @@
 
                         <label class="form-label section-title c-blue-darker mb-0">Titul za</label>
 
-                        <input id="suffix" class="form-control" placeholder="Titul za" data-value="suffix">
+                        <input data-dirty id="suffix" class="form-control" placeholder="Titul za" data-value="suffix">
 
                     </div>
 
@@ -66,13 +67,13 @@
 
                     <div class="col-12 col-md-2">
                         <label class="form-label section-title  c-blue-darker mb-0">Pohlaví</label>
-                        <input id="sex" class="form-control" readonly 
+                        <input data-dirty id="sex" class="form-control" readonly 
                         data-value="strSex" data-action="fPickSex">
                     </div>
 
                     <div class="col-12 col-md-4">
                         <label class="form-label section-title  c-blue-darker mb-0">Zkrácené jméno (cca 5 znaků)</label>
-                        <input id="shortname" class="form-control"
+                        <input data-dirty id="shortname" class="form-control"
                             placeholder="Zkrácené jméno pro zobrazování ve směnách (max. 5 znaků)"
                             data-value="shortname">
                     </div>
@@ -81,7 +82,7 @@
                     
                     <div class="col-12 col-md-6">
                         <label class="form-label section-title c-blue-darker mb-0">Telefonní číslo</label>
-                        <input id="phone" class="form-control" placeholder="Telefonní číslo" data-value="phone">
+                        <input data-dirty id="phone" class="form-control" placeholder="Telefonní číslo" data-value="phone">
                     </div>
 
                     
@@ -94,13 +95,13 @@
                     
                     <div class="col-12 col-md-6">
                         <label class="form-label section-title c-blue-darker mb-0">Preferovaná pracoviště</label>
-                        <input id="spotsPicker" class="form-control" readonly 
+                        <input data-dirty id="spotsPicker" class="form-control" readonly 
                         data-value="strSpots" data-action="fPickFavoriteSpots">
                     </div>
                     
                     <div class="col-12 col-md-6">
                         <label class="form-label section-title c-blue-darker mb-0">Pracovní pozice (i doplňkové)</label>
-                        <input id="positionsPicker" class="form-control" readonly 
+                        <input data-dirty id="positionsPicker" class="form-control" readonly 
                         data-value="strPositions" data-action="fPickFavoritePositions">
                     </div>
 
@@ -109,23 +110,25 @@
                 
 
                 <!-- DEPUTIES -->
-                <div class="section-title c-blue-darker" data-visible="role=Mngr">Zástupci (mají podobná práva jako vy)</div>
-                <!-- <input id="deputyPicker" class="form-control" readonly 
+                <div data-visible="role=Mngr">
+                <div class="section-title c-blue-darker">Zástupci (mají podobná práva jako vy)</div>
+                <!-- <input data-dirty id="deputyPicker" class="form-control" readonly 
                 data-value="strDeputies" data-action="fPickDeputyEmployees"> -->
-                <textarea
+                <textarea data-dirty 
                     id="deputyPicker"
                     class="form-control input-picker"
                     rows="1"
                     readonly
                     data-value="strDeputies" data-action="fPickDeputyEmployees">
                 </textarea>
+                </div>
 
                 <!-- favorite_ -->
                 <div class="section-title c-blue-darker">Oblíbení kolegové/yně (budou preferováni při rozepisování do směn)</div>
-                <!-- <input id="favoritePicker" class="form-control" readonly 
+                <!-- <input data-dirty id="favoritePicker" class="form-control" readonly 
                 data-value="strFavorites" data-action="fPickFavoriteEmployees"> -->
 
-                <textarea
+                <textarea data-dirty
                     id="favoritePicker"
                     class="form-control input-picker"
                     rows="1"
@@ -135,9 +138,9 @@
                 
                 <!-- UNfavorite_ -->
                 <div class="section-title c-blue-darker">Neoblíbení kolegové/yně (pokud to bude možné, nebudou vám přiřazováni do směn)</div>
-                <!-- <input id="unfavoritePicker" class="form-control" readonly 
+                <!-- <input data-dirty id="unfavoritePicker" class="form-control" readonly 
                 data-value="strUnfavorites" data-action="fPickUnfavoriteEmployees"> -->
-                <textarea
+                <textarea data-dirty
                     id="unfavoritePicker"
                     class="form-control input-picker"
                     rows="1"
@@ -158,8 +161,8 @@
 
                     </div>
                     <div class="col-12 col-md-6">
-                    <button type="button" class="btn btn-blue-green-white w-100 mb-2" data-action="fShowLogin"> 
-                        Zpět na přihlášení
+                    <button type="button" class="btn btn-blue-green-white w-100 mb-2" data-action="fGoToPage"> 
+                        Zpět bez uložení
                     </button>
 
                     </div>

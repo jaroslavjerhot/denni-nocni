@@ -1,5 +1,5 @@
 :root {
-    --royal-green: #064e3b;
+    --royal-green-middle: #08694f;
     --royal-green-dark: #022c22;
     --royal-green-light: #10b981;
     --gold: #d4af37;
@@ -116,7 +116,13 @@ body {
     border-color: var(--royal-green-dark);
     color: white;
 }
-.btn-green-darker, .btn-green-lighter:hover, .btn-green-darker:hover     {
+.btn-green-middle {
+    background: var(--royal-green-middle);
+    border-color: var(--royal-green-dark);
+    color: white;
+}
+
+.btn-green-darker, .btn-green-lighter:hover, .btn-green-darker:hover, .btn-green-middle:hover     {
     background: var(--royal-green-dark);
     border-color: var(--royal-green-dark);
     color: white;

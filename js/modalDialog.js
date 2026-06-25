@@ -6,6 +6,7 @@ function fCreateModal(sModalTitle, text) {
     const modalText = document.getElementById("modalText");
     const modalHeader = document.getElementById("modalHeader");
     const modalOK = document.getElementById("modalOk");
+    const modalCancel = document.getElementById("modalCancel");
     //const modalClose = document.getElementById("modalClose");
     // of modalText is not text, use JSON.stringify
     
@@ -20,19 +21,21 @@ function fCreateModal(sModalTitle, text) {
           modalHeader.className ="modal-header bg-danger text-white";
           modalOK.className = "btn bg-danger text-white";
           //modalClose.className = "btn-close btn-close-white";
-
-            break;
+          modalCancel.style.display = "none";
+          break;
 
         case "succ":
             modalTitle.innerText = ":))";
             modalHeader.className = "modal-header bg-success text-white";
             modalOK.className = "btn bg-success text-white";
+            modalCancel.style.display = "none";
             break;
 
         case "warn":
             modalTitle.innerText = "!!!";
             modalHeader.className = "modal-header bg-warning text-white";
             modalOK.className = "btn bg-warning text-white";
+            modalCancel.style.display = "none";
             break;
 
         case "wait":
@@ -41,6 +44,14 @@ function fCreateModal(sModalTitle, text) {
             modalOK.className = "btn bg-primary text-white";
             const modalClose = document.getElementById("modalClose");
             modalClose.style.display = "none";
+            modalCancel.style.display = "none";
+            break;
+
+        case "question":
+            modalTitle.innerText = "???";
+            modalHeader.className = "modal-header bg-info text-white";
+            modalOK.className = "btn bg-info text-white";
+            modalCancel.className = "btn btn-red-darker";
             break;
 
         default:
@@ -128,6 +139,7 @@ async function fShowChoiceModal(
         const titleElement = document.getElementById("choiceModalTitle");
         const bodyElement = document.getElementById("choiceModalBody");
         const btnOk = document.getElementById("choiceModalOk");
+        const btnDelete = document.getElementById("choiceModalDelete");
         const btnCancel = document.getElementById("choiceModalCancel");
 
         titleElement.textContent = title;
@@ -218,6 +230,15 @@ async function fShowChoiceModal(
             resolve({ids: Array.from(selected), descr: fGetDescrFromSelected(lstChoices, Array.from(selected))});
         }
 
+        function fDelete() {
+
+            fCleanup();
+
+            modal.hide();
+
+            resolve({ids: [], descr: []});
+        }
+
         function fCancel() {
 
             fCleanup();
@@ -230,10 +251,12 @@ async function fShowChoiceModal(
         function fCleanup() {
 
             btnOk.removeEventListener("click", fOk);
+            btnDelete.removeEventListener("click", fDelete);
             btnCancel.removeEventListener("click", fCancel);
         }
 
         btnOk.addEventListener("click", fOk);
+        btnDelete.addEventListener("click", fDelete); 
         btnCancel.addEventListener("click", fCancel);
 
         fRender();

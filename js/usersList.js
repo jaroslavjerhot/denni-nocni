@@ -14,12 +14,14 @@ import {
     appFormValues,
 } from "./firebase.js";
 
-async function fShowUsersList() {
+async function fShowUsersListPage() {
     appHtml.titUser = appUser.current.description;
     appHtml.titPage = "Seznam zaměstnanců";
     // console.log("appHtml:", appHtml);
     // console.log("appFormValues:", appFormValues);
-    
+    appHtml.prevPage = appHtml.activePage;
+    appHtml.activePage = "usersList";
+
     const dctEmployees = await fGetVDctFromCollection("employees");
     appHtml.dctEmployees = {...dctEmployees};
 
@@ -31,11 +33,11 @@ async function fShowUsersList() {
     // Your implementation here
 
 }
-window.fShowUsersList = fShowUsersList;    
+window.fShowUsersListPage = fShowUsersListPage;    
 
 
 async function fRenderUsersList(dctEmployees) {
-    console.log("fRenderUsersList - dctEmployees:", dctEmployees);
+    // console.log("fRenderUsersList - dctEmployees:", dctEmployees);
 
     const container =
         document.getElementById("usersListContainer");
@@ -71,7 +73,7 @@ async function fRenderUsersList(dctEmployees) {
 
 
 function fCreateUsersListHtml(lstUsers) {
-    console.log("fCreateUsersListHtml - lstUsers:", lstUsers);
+    // console.log("fCreateUsersListHtml - lstUsers:", lstUsers);
     if (lstUsers.length === 0) {
         return "<div class='text-muted'>Žádní zaměstnanci.</div>";
     }
@@ -81,8 +83,8 @@ function fCreateUsersListHtml(lstUsers) {
             <table class="table table-sm align-middle">
                 <thead>
                     <tr>
-                        <th>Jméno</th>
-                        <th>Telefon</th>
+                        <th></th>
+                        <th></th>
                         <th></th>
                     </tr>
                 </thead>
@@ -105,22 +107,28 @@ function fCreateUserRowHtml(user) {
         ?? user.name
         ?? "";
 
-    const sPhone =
+    let sPhone =
         String(user.phone ?? "").trim();
 
-    const sPhoneClean =
+    let sPhoneClean =
         sPhone.replace(/\s+/g, "");
+
+    // adds +420 if not present and add spaces for display
+    if (sPhoneClean && !sPhoneClean.startsWith("+420")) {
+        sPhoneClean = "+420" + sPhoneClean;
+    }
+    sPhone = sPhoneClean.substring(0,4) + " " + sPhoneClean.substring(4,7) + " " + sPhoneClean.substring(7,10) + " " + sPhoneClean.substring(10,13);
 
     const sPhoneHtml =
         sPhone
             ? `
-                <a href="tel:${sPhoneClean}" class="btn btn-sm btn-outline-success me-1">
-                    Volat
+                <a href="tel:${sPhoneClean}" class="btn btn-sm btn-green-middle me-1">
+                    ${sPhone}
                 </a>
 
                 <a href="https://wa.me/${fPhoneForWhatsApp(sPhoneClean)}"
                    target="_blank"
-                   class="btn btn-sm btn-outline-success">
+                   class="btn btn-sm btn-green-lighter">
                     WhatsApp
                 </a>
               `
@@ -132,21 +140,22 @@ function fCreateUserRowHtml(user) {
                 ${fEscapeHtml(sName)}
             </td>
 
+            
             <td>
                 ${sPhoneHtml}
             </td>
 
             <td class="text-end">
                 <button
-                    class="btn btn-sm btn-outline-primary me-1"
-                    data-action="fShowUserProfile"
+                    class="btn btn-sm inp-blue-lighter me-1"
+                    data-action="fShowUserProfileFromList"
                     data-user-code="${fEscapeHtml(sCode)}">
                     Profil
                 </button>
 
                 <button
-                    class="btn btn-sm btn-outline-secondary"
-                    data-action="fShowUserRequests"
+                    class="btn btn-sm btn-blue-darker"
+                    data-action="fShowUserRequestsFromList"
                     data-user-code="${fEscapeHtml(sCode)}">
                     Požadavky
                 </button>
@@ -175,29 +184,24 @@ function fEscapeHtml(value) {
 }
 
 
-async function fShowUserProfile(element) {
+async function fShowUserProfileFromList(element) {
 
-    const sUserCode =
-        element.dataset.userCode;
-
-    await fShowPage(
-        "userProfile",
-        {
-            userCode: sUserCode
-        }
-    );
+    const sUserCode = element.dataset.userCode;
+    appUser.edited = await fGetDctFromDoc("employees", sUserCode);
+    await fShowUserProfilePage(appUser.edited, appHtml.activePage);
 }
+window.fShowUserProfileFromList = fShowUserProfileFromList;
 
 
-async function fShowUserRequests(element) {
+async function fShowUserRequestsFromList(element) {
 
-    const sUserCode =
-        element.dataset.userCode;
+    const sUserCode = element.dataset.userCode;
+    appUser.edited = await fGetDctFromDoc("employees", sUserCode);
+    const sRequestId =  fGetMonthAhead() + "_" + sUserCode;
+    const dctUserRequests = await fGetDctFromDoc("userRequests", sRequestId);
+    //console.log("sRequestId:", sRequestId);
+    //console.log("dctUserRequests:", dctUserRequests);
+    await fShowUserRequestsPage(appUser.edited, dctUserRequests);
 
-    await fShowPage(
-        "userRequests",
-        {
-            userCode: sUserCode
-        }
-    );
 }
+window.fShowUserRequestsFromList = fShowUserRequestsFromList;

@@ -74,7 +74,9 @@ async function fLogin() {
         appUser.current.dctDepartment = await fGetDctFromDoc("departments", appUser.current.department);
         appUser.current.dctCompany = await fGetDctFromDoc("companys", appUser.current.dctDepartment.company);
         appUser.current.dctUsers = await fGetDctFromDoc("employees", fGetMonthAhead() + "_" + appUser.current.code);
-        
+        appFormValues.collectionsTS = await fGetDctFromDoc("collections", "TS");
+
+
         //console.log('appUser.current:', appUser.current);
         appHtml.titCompany = appUser.current.dctCompany.description || "";
         appHtml.titDepartment = appUser.current.dctDepartment.description || "";
@@ -96,7 +98,7 @@ async function fLogin() {
         if (!appUser.edited.profilePublished) {
             
             //console.log("appUser.edited:", appUser.edited);
-            await fShowUserProfilePage(appUser.edited, true);
+            await fShowUserProfilePage(appUser.edited, true, "userRequests");
             //await fShowMsg("warn", "Nejprve doplňte a uložte svůj profil.");
             return;
         } else {
@@ -105,8 +107,8 @@ async function fLogin() {
             const dctUserRequests = await fGetDctFromDoc("userRequests", sRequestId);
             //console.log("sRequestId:", sRequestId);
             //console.log("dctUserRequests:", dctUserRequests);
-            await fShowUserRequestsPage(appUser.edited, dctUserRequests);
-
+            //await fShowUserRequestsPage(appUser.edited, dctUserRequests);
+            await fShowUsersListPage();
             return;
         }
 

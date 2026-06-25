@@ -86,15 +86,6 @@ function fGetFirebaseErrorCz(sCode) {
 }
 export { fGetFirebaseErrorCz };
 
-// export const appState = {
-//     dctEmpl: null,
-//     department: "ApoBr",
-//     dctEmployees: null,
-//     dctDepartments: null,
-//     dctSpots: null,
-//     lstSpots: null,
-//     dctPositions: null,
-// };
 const dctSex = {
     "m": {"description": "Muž"},
     "f": {"description": "Žena"}
