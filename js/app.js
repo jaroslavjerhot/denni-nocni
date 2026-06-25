@@ -56,12 +56,15 @@ history.pushState({}, "", location.href);
 window.addEventListener("popstate", async function () {
     //alert("Back or Forward");
     if (appHtml.isDirty) {
-        //const answer = await fShowMsg("question", "Máte neuložené změny. Opravdu chcete opustit stránku?");
-        await fShowMsg("warn", "Máte neuložené změny. Nejprve je uložte nebo zrušte.");
-        // if (confirm("Máte neuložené změny. Opravdu chcete opustit stránku?")){
+        if (fIsMobile()) {
+            if (confirm("Máte neuložené změny. Opravdu chcete opustit stránku?")){
+                await fGoToPage();
+            }else{
+            await fShowMsg("warn", "Máte neuložené změny. Nejprve je uložte nebo zrušte.");
+            }
     } else {
-     fGoToPage();
-    }
+    await fGoToPage();
+    }}
 });
 
 
@@ -758,3 +761,8 @@ async function fGoToPage(sTargetPage) {
     }
 }
 window.fGoToPage = fGoToPage;
+
+function fIsMobile() {
+    return window.matchMedia("(max-width: 767.98px)").matches;
+}
+window.fIsMobile = fIsMobile;
