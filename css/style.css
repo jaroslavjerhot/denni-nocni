@@ -169,8 +169,7 @@ body {
     /* font-size: .9rem; */
     padding: .25rem;
     margin-left: 1px;
-    margin-right: 1px;
-    
+    margin-right: 1px;    
 }
 
 
@@ -286,12 +285,12 @@ body {
     color: #991b1b;
 }
 
-.sel-shift-hld {
+.sel-shift-sck {
     background: #dbeafe;
     color: #1e40af;
 }
 
-.sel-shift-sck {
+.sel-shift-hld {
     background: #f7ffd1;
     color: #425100;
 }
@@ -326,17 +325,17 @@ body {
     
     .requests-calendar-day {
         min-width: 20px;
-        font-size: .75rem;
+        font-size: .85rem;
         padding: 0;
     }
 
     .requests-calendar-table select {
-        font-size: .75rem;
+        font-size: .85rem;
         padding: .15rem;
     }
 
     .requests-calendar-table {
-        font-size: .85rem;
+        font-size: .95rem;
         text-align: center;
     }
 
@@ -350,6 +349,12 @@ body {
         padding: .1rem 1.2rem .1rem .25rem;
         font-size: .8rem;
     }
+
+    .btn-in-list {
+       width: 90px;
+    }
+
+
 
     
 

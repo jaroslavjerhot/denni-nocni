@@ -19,16 +19,16 @@ const maxRequests = 10;
 
 const lstRequestOptionsDay = [
     ["", "Bez požadavku"],
-    ["wnt", "chci", "btn btn-green-lighter w-100 mb-1", "btn btn-green-darker w-100 mb-1", ],
-    ["cnt", "nemohu", "btn btn-red-lighter w-100 mb-1", "btn btn-red-darker w-100 mb-1"],
-    ["hld", "dovol", "btn btn-yellow-lighter w-100 mb-1", "btn btn-yellow-darker w-100 mb-1"],
-    ["sck", "nem/očr", "btn btn-blue2-lighter w-100 mb-1", "btn btn-blue2-darker w-100 mb-1"],
+    ["wnt", "chci", "btn btn-green-lighter w-100 mb-1 shift-font", "btn btn-green-darker w-100 mb-1 shift-font", ],
+    ["cnt", "nemohu", "btn btn-red-lighter w-100 mb-1 shift-font", "btn btn-red-darker w-100 mb-1 shift-font"],
+    ["hld", "dovol", "btn btn-yellow-lighter w-100 mb-1 shift-font", "btn btn-yellow-darker w-100 mb-1 shift-font"],
+    ["sck", "nem/očr", "btn btn-blue2-lighter w-100 mb-1 shift-font", "btn btn-blue2-darker w-100 mb-1 shift-font"],
   ];
 
 const lstRequestOptionsNight = [
     ["", "Noční"],
-    ["wnt", "N:chci", "btn btn-green-lighter w-100 mb-1", "btn btn-green-darker w-100 mb-1"],
-    ["cnt", "N:nemohu", "btn btn-red-lighter w-100 mb-1", "btn btn-red-darker w-100 mb-1"],
+    ["wnt", "N:chci", "btn btn-green-lighter w-100 mb-1 shift-font", "btn btn-green-darker w-100 mb-1 shift-font"],
+    ["cnt", "N:nemohu", "btn btn-red-lighter w-100 mb-1 shift-font", "btn btn-red-darker w-100 mb-1 shift-font"],
 ];
 
 appHtml.optRequests = lstRequestOptionsDay;
@@ -152,16 +152,6 @@ async function fRenderRequestsCalendar(dctUserRequests) {
     
 }
 
-function fChangeRequestColorsmaz(select) {
-
-    Array.from(select.classList)
-        .filter(c => c.startsWith("sel-shift-"))
-        .forEach(c =>
-            select.classList.remove(c)
-        );
-    
-        select.classList.add("sel-shift-" + select.value);
-}
 
 window.fRenderRequestsCalendar = fRenderRequestsCalendar;
 
@@ -175,7 +165,7 @@ function fCreateDayForRequestsInput(year, month, day) {
 
     const dayInWeekCz = ["Ne", "Po", "Út", "St", "Čt", "Pá", "So", ][new Date(year, month - 1, day).getDay()];    
     
-    const sDate = `${dayInWeekCz} ${day}.${month}`;
+    const sDate = `${dayInWeekCz}&nbsp;${day}.${month}`;
 
     // sets value of inputs from appFormValues.userRequests if they exist, otherwise set to empty string
     const sDayShiftValue = fGetDctValueByKey(appFormValues.userRequests, dateText + "-d", '');
