@@ -8,6 +8,7 @@
     --blue-light: #e0eaf7;
     --blue-middle: #2a7cc4; 
     --blue-dark: #082c75;
+    --blue-semidark: #093895;
     --blue-darker: #0c2b64;
     --red-lighter: #fe0b0b;
     --red-darker: #991b1b;
@@ -82,7 +83,13 @@ body {
     color: white;
 }
 
-.btn-blue-darker:hover {
+.btn-blue-semidark {
+    background: var(--blue-semidark);
+    border-color: var(--blue-darker);
+    color: white;
+}
+
+.btn-blue-darker:hover, .btn-blue-semidark:hover {
     background: var(--blue-darker);
     border-color: var(--blue-darker);
     color: white;
@@ -149,6 +156,16 @@ body {
 }
 .shift-input {
     height: 30px;
+    /* font-size: .9rem; */
+    padding: .25rem;
+    margin-left: 1px;
+    margin-right: 1px;
+    
+}
+
+.btn-in-list {
+    height: 30px;
+    width: 120px;
     /* font-size: .9rem; */
     padding: .25rem;
     margin-left: 1px;
@@ -308,7 +325,7 @@ body {
     }
     
     .requests-calendar-day {
-        min-width: 80px;
+        min-width: 20px;
         font-size: .85rem;
         margin: 0;
     }

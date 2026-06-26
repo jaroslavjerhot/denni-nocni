@@ -85,7 +85,6 @@ function fCreateUsersListHtml(lstUsers) {
                     <tr>
                         <th></th>
                         <th></th>
-                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -122,13 +121,13 @@ function fCreateUserRowHtml(user) {
     const sPhoneHtml =
         sPhone
             ? `
-                <a href="tel:${sPhoneClean}" class="btn btn-sm btn-green-middle me-1">
-                    ${sPhone}
+                <a href="tel:${sPhoneClean}" class="btn btn-sm btn-green-middle mb-1 btn-in-list">
+                    ${sPhone.replace('+420 ', '')}
                 </a>
 
                 <a href="https://wa.me/${fPhoneForWhatsApp(sPhoneClean)}"
                    target="_blank"
-                   class="btn btn-sm btn-green-lighter">
+                   class="btn btn-sm btn-green-lighter mb-1 btn-in-list">
                     WhatsApp
                 </a>
               `
@@ -137,24 +136,22 @@ function fCreateUserRowHtml(user) {
     return `
         <tr>
             <td>
-                ${fEscapeHtml(sName)}
+                <strong>${fEscapeHtml(sName)}</strong>
             </td>
 
             
             <td>
                 ${sPhoneHtml}
-            </td>
 
-            <td class="text-end">
                 <button
-                    class="btn btn-sm inp-blue-lighter me-1"
+                    class="btn btn-sm btn-blue-darker mb-1 btn-in-list"
                     data-action="fShowUserProfileFromList"
                     data-user-code="${fEscapeHtml(sCode)}">
                     Profil
                 </button>
 
                 <button
-                    class="btn btn-sm btn-blue-darker"
+                    class="btn btn-sm btn-blue-semidark mb-1 btn-in-list"
                     data-action="fShowUserRequestsFromList"
                     data-user-code="${fEscapeHtml(sCode)}">
                     Požadavky
