@@ -175,7 +175,7 @@ function fCreateDayForRequestsInput(year, month, day) {
 
     const dayInWeekCz = ["Ne", "Po", "Út", "St", "Čt", "Pá", "So", ][new Date(year, month - 1, day).getDay()];    
     
-    const sDate = `${dayInWeekCz} ${day}. ${month}.`;
+    const sDate = `${dayInWeekCz} ${day}.${month}`;
 
     // sets value of inputs from appFormValues.userRequests if they exist, otherwise set to empty string
     const sDayShiftValue = fGetDctValueByKey(appFormValues.userRequests, dateText + "-d", '');
