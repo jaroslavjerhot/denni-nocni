@@ -108,7 +108,8 @@ async function fLogin() {
             //console.log("sRequestId:", sRequestId);
             //console.log("dctUserRequests:", dctUserRequests);
             //await fShowUserRequestsPage(appUser.edited, dctUserRequests);
-            await fShowUsersListPage();
+            //await fShowUsersListPage();
+            await fShowShiftsPlannerPage();
             return;
         }
 

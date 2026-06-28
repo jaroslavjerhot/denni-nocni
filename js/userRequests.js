@@ -109,11 +109,11 @@ async function fRenderRequestsCalendar(dctUserRequests) {
 
             td.className = "requests-calendar-day";
 
-            if (isWeekend(date)) {
+            if (fIsWeekend(date)) {
                 td.classList.add("weekend-day");
             }
 
-            if (isCzechHoliday(date)) {
+            if (fIsCzechHoliday(date)) {
                 td.classList.add("holiday-day");
             }
 
@@ -165,6 +165,7 @@ function fCreateDayForRequestsInput(year, month, day) {
 
     const dayInWeekCz = ["Ne", "Po", "Út", "St", "Čt", "Pá", "So", ][new Date(year, month - 1, day).getDay()];    
     
+    // define sDate as dayInWeekCz + day + month, e.g. "Po 1.1"
     const sDate = `${dayInWeekCz}&nbsp;${day}.${month}`;
 
     // sets value of inputs from appFormValues.userRequests if they exist, otherwise set to empty string
@@ -277,80 +278,6 @@ async function fSaveUserRequests() {
 window.fSaveUserRequests = fSaveUserRequests;
 
 
-function isWeekend(date) {
-    const d = date.getDay();
-    return d === 0 || d === 6;
-}
-window.isWeekend = isWeekend;
-
-function isCzechHoliday(date) {
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-
-    const fixedHolidays = [
-        "1-1",
-        "5-1",
-        "5-8",
-        "7-5",
-        "7-6",
-        "9-28",
-        "10-28",
-        "11-17",
-        "12-24",
-        "12-25",
-        "12-26"
-    ];
-
-    if (fixedHolidays.includes(month + "-" + day)) {
-        return true;
-    }
-    
-
-    const easter = getEasterSunday(year);
-
-    const goodFriday = addDays(easter, -2);
-    const easterMonday = addDays(easter, 1);
-
-    return sameDate(date, goodFriday) || sameDate(date, easterMonday);
-}
-window.isCzechHoliday = isCzechHoliday;
-
-function getEasterSunday(year) {
-    const a = year % 19;
-    const b = Math.floor(year / 100);
-    const c = year % 100;
-    const d = Math.floor(b / 4);
-    const e = b % 4;
-    const f = Math.floor((b + 8) / 25);
-    const g = Math.floor((b - f + 1) / 3);
-    const h = (19 * a + b - d - g + 15) % 30;
-    const i = Math.floor(c / 4);
-    const k = c % 4;
-    const l = (32 + 2 * e + 2 * i - h - k) % 7;
-    const m = Math.floor((a + 11 * h + 22 * l) / 451);
-    const month = Math.floor((h + l - 7 * m + 114) / 31);
-    const day = ((h + l - 7 * m + 114) % 31) + 1;
-
-    return new Date(year, month - 1, day);
-}
-window.getEasterSunday = getEasterSunday;
-
-function addDays(date, days) {
-    const result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
-}
-window.addDays = addDays;
-
-function sameDate(a, b) {
-    return (
-        a.getFullYear() === b.getFullYear() &&
-        a.getMonth() === b.getMonth() &&
-        a.getDate() === b.getDate()
-    );
-}
-window.sameDate = sameDate;
 
 async function fPickShift(element, bOpenSelect=true) {
     //if (!appFormValues.userProfile.deputies){ appFormValues.userProfile.deputies = []; }
