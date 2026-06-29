@@ -17,21 +17,9 @@ import {
 
 const maxRequests = 10;
 
-const lstRequestOptionsDay = [
-    ["", "Bez požadavku"],
-    ["wnt", "chci", "btn btn-green-lighter w-100 mb-1 shift-font", "btn btn-green-darker w-100 mb-1 shift-font", ],
-    ["cnt", "nemohu", "btn btn-red-lighter w-100 mb-1 shift-font", "btn btn-red-darker w-100 mb-1 shift-font"],
-    ["hld", "dovol", "btn btn-yellow-lighter w-100 mb-1 shift-font", "btn btn-yellow-darker w-100 mb-1 shift-font"],
-    ["sck", "nem/očr", "btn btn-blue2-lighter w-100 mb-1 shift-font", "btn btn-blue2-darker w-100 mb-1 shift-font"],
-  ];
 
-const lstRequestOptionsNight = [
-    ["", "Noční"],
-    ["wnt", "N:chci", "btn btn-green-lighter w-100 mb-1 shift-font", "btn btn-green-darker w-100 mb-1 shift-font"],
-    ["cnt", "N:nemohu", "btn btn-red-lighter w-100 mb-1 shift-font", "btn btn-red-darker w-100 mb-1 shift-font"],
-];
 
-appHtml.optRequests = lstRequestOptionsDay;
+//appHtml.optRequests = lstRequestOptionsDay;
 
 
 //document.getElementById("requestMonth").addEventListener("change", fRenderCalendar);

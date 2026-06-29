@@ -386,7 +386,7 @@ body {
     min-height: 110px;
     resize: vertical;
     font-size: .8rem;
-    display: flex;
+    /* display: flex; */
     flex-direction: column;
     justify-content: flex-start;
 }
@@ -410,12 +410,10 @@ body {
         padding: .1rem !important;
     }
 
-    .planner-cell {
-        min-width: 110px;
-    }
+    
+
 
     .planner-textarea {
-        min-height: 90px;
         font-size: .75rem;
     }
 }

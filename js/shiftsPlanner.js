@@ -17,10 +17,13 @@ import {
 export async function fShowShiftsPlannerPage() {
     appHtml.titUser = appUser.current.description;
     appHtml.titPage = "Plánovač směn";
-    appFormValues.userRequests = {};
-
+    
     appHtml.prevPage = appHtml.activePage;
     appHtml.activePage = "shiftsPlanner";
+
+
+    appHtml.dctRequestOpts = fLstToDct(lstRequestOptionsDay, 0, ['code', 'description', 'classNormal', 'classHover', 'rate']);    
+    // console.log("fShowShiftsPlannerPage - appHtml.dctRequestOpts:", appHtml.dctRequestOpts);
 
     //await fAddDctLstAndStrToDctFromCollection("spots", appHtml.dctSpots, appUser.current);
     
@@ -42,9 +45,53 @@ export async function fShowShiftsPlannerPage() {
     appFormValues.shiftsPlanner = {'activeMonth': monthSelect.value};
     appFormValues.shiftsPlanner[monthSelect.value] = {};
     
+    appFormValues.usersRequests = await fGetAllUsersRequests(monthSelect.value);
+    //console.log("fShowShiftsPlannerPage - appFormValues:", appFormValues);
+    
 
     await fBuildShiftsPlanner(monthSelect.value);
 }
+
+async function fGetAllUsersRequests(sMonth) {
+    let dctUsersRequests = {}
+    // reads all userRequestsfor specified  as they are    
+    await Promise.all(Object.entries(appHtml.dctEmployees).map(async function([code, dctEmployee]) {
+        const sDocumentId = sMonth + "_" + code;
+        //console.log(sDocumentId);
+        const userRequests = await fGetDctFromDoc('userRequests', sDocumentId);
+        const bIsPublished = userRequests?.published ?? false;
+        if (bIsPublished) {
+            //console.log(userRequests);
+            dctUsersRequests[sDocumentId] = {...userRequests};
+        }
+    }))
+
+    // conversion to array of objects with code and data like {'01-d': {'00022':'cnt', '00023':'cnt'}, 
+    //console.log("fGetAllUsersRequests - dctUsersRequests:", dctUsersRequests);
+    let dctOut = {}
+    dctOut[sMonth] = {}
+    //console.log("fGetAllUsersRequests - dctOut:", dctOut);
+    for (const [keyEmpl, dctEmpl] of Object.entries(dctUsersRequests)) {
+        //console.log("fGetAllUsersRequests - code:", keyEmpl, "dct:", dctEmpl);
+        const sEmployeeCode = keyEmpl.split("_")[1];
+
+        //dctOut[sEmployeeCode] = {};
+        Object.entries(dctEmpl).forEach(function([keyShift, value2]) {
+            //console.log("fGetAllUsersRequests - key2:", keyShift, "value2:", value2);
+            if (keyShift.slice(0,7) === sMonth) {
+                const sShiftCode = keyShift.slice(8);
+                if (dctOut[sMonth][sShiftCode] === undefined) {
+                    dctOut[sMonth][sShiftCode] = {};
+                }
+                dctOut[sMonth][sShiftCode][sEmployeeCode] = value2;
+            }
+        })
+    }
+    //console.log("fGetAllUsersRequests - dctOut:", dctOut);
+    return dctOut;
+}    
+
+
 
 
 async function fPlannerMonthChanged(element) {
@@ -183,7 +230,7 @@ function fCreatePlannerCell(spot, day, sSpotCode, sShiftCode, sDateKey, sTdClass
         </td>`;
     }
 
-    const sField = `${sDateKey}_${sShiftCode}_${sSpotCode}`;
+    const sField = `${sDateKey}-${sShiftCode}_${sSpotCode}`;
 
     //console.log("fCreatePlannerCell - sField: " + sField + ", sWorkValue: " + sWorkValue);
     
@@ -309,43 +356,126 @@ window.fShowShiftsPlannerPage = fShowShiftsPlannerPage;
 window.fPlannerMonthChanged = fPlannerMonthChanged;
 
 async function fPickCrewMember(element) {
-    const sId = element.dataset.id
+    const sElementId = element.dataset.id
     // console.log("fPickCrewMember - sId:", sId, "element:", element);
-    // console.log("fPickCrewMember - appHtml.optEmployees:", appHtml.optEmployees);
-    console.log("fPickCrewMember - appFormValues:", appFormValues);
+   // console.log("fPickCrewMember - appHtml", appHtml);
+    //console.log("fPickCrewMember - appFormValues:", appFormValues);
     const sActiveMonth = appFormValues.shiftsPlanner.activeMonth;
-    const lstFilledEmployees = fGetFilledEmployeesForDay(sId.split("_")[0]);
-    console.log("fPickCrewMember - lstFilledEmployees:", lstFilledEmployees);
+    const sPrevMonth = fMoveDate(sActiveMonth+'-01', -1).slice(0, 7);
+    //console.log("fPickCrewMember - sActiveMonth:", sActiveMonth, "sPrevMonth:", sPrevMonth);
+    const sCurrentShiftId = sActiveMonth + "-" + sElementId.split("_")[0];
+    const sCurrentDate = sCurrentShiftId.slice(0, 10);
+    const sCurrentDayNight = sCurrentShiftId.slice(-1);
+    //console.log("fPickCrewMember - sCurrentShiftId:", sCurrentShiftId, "sCurrentDate:", sCurrentDate, "sCurrentDayNight:", sCurrentDayNight);
+    
+    // get prev, current and next shift ids for the same date and spot
+    let sPrevShiftId, sNextShiftId;
+    if (sCurrentDayNight === "d") {
+        sPrevShiftId = fMoveDate(sCurrentDate, -1) + "-n";
+        sNextShiftId = sCurrentShiftId.replace('-d', '-n');
+    } else if (sCurrentDayNight === "n") {
+        sPrevShiftId = sCurrentShiftId.replace('-n', '-d');
+        sNextShiftId = fMoveDate(sCurrentDate, 1) + "-d";
+    }
+    //console.log("fPickCrewMember - sCurrentShiftId:", sCurrentShiftId, "sPrevShiftId:", sPrevShiftId, "sNextShiftId:", sNextShiftId);
+    
+    // get all filled employees for the prev, current and next shift
+    let dctFilledEmployees = {};
+    dctFilledEmployees = {
+        ...fGetFilledEmployeesForShift(sPrevShiftId, 'prev'),
+        ...fGetFilledEmployeesForShift(sCurrentShiftId, 'current'),
+        ...fGetFilledEmployeesForShift(sNextShiftId, 'next'),
+    };
+    //console.log("fPickCrewMember - dctFilledEmployees:", dctFilledEmployees);
+    // adds rating to each employee
+    let dctEmployeeRated = {};
+    const sDayShiftId = sElementId.split("_")[0];
+    Object.entries(appHtml.dctEmployees).forEach(([sEmplId, dctEmpl]) => {
+        dctEmployeeRated[sEmplId] = {'code': sEmplId, 'name': dctEmpl.description, 'classNormal': '', 'classHover': '', 'rate': 0};
+        // console.log("fPickCrewMember - sEmplId:", sEmplId, "dctEmpl:", dctEmpl);
+        // console.log("fPickCrewMember - dctEmployeeRated[sEmplId]:", dctEmployeeRated[sEmplId]);
+        
+        //const sFilled = fGetDctValueByKey(dctFilledEmployees[sId], code);
+        const dctFilled = fGetDctValueByKey(dctFilledEmployees, sDayShiftId, {});
+        const sFilled = fGetDctValueByKey(dctFilled, sEmplId, '');
+        if (sFilled) {
+            dctEmployeeRated[sEmplId].rate += (-1000);
+            return;
+        }
+        const dctShiftRequests = fGetDctValueByKey(appFormValues.usersRequests[sActiveMonth], sDayShiftId, {});
+        const sEmplRequest = fGetDctValueByKey(dctShiftRequests, sEmplId, '');
+        // console.log("fPickCrewMember - appFormValues.usersRequests[sActiveMonth]:", appFormValues.usersRequests[sActiveMonth]);
+        // console.log("fPickCrewMember - sDayShiftId:", sDayShiftId, "dctRequest:", dctRequest);
+        // console.log("fPickCrewMember - code:", code, "sFilled:", sFilled, "dctRequest:", dctRequest);
+        if (sEmplRequest) {
+            //const sEmplRequest = fGetDctValueByKey(dctEmplRequest, sEmplId, '');
+            console.log("fPickCrewMember - sEmplId:", sEmplId, "sEmplRequest:", sEmplRequest)
+            //const sRequestRate = fGetDctValueByKey(appHtml.dctRequestOpts[sEmplRequest], 'rate', 0);
+            
+            dctEmployeeRated[sEmplId] = {...dctEmployeeRated[sEmplId], ...{'request': sEmplRequest}, 
+             ...appHtml.dctRequestOpts[sEmplRequest]};
+        }
+    });
 
+    
+    console.log("fPickCrewMember - dctEmployeeRated:", dctEmployeeRated);
 
-    const lstAvailableEmployees = 
-        fFilterFilledEmployees([...appHtml.optEmployees], lstFilledEmployees);
+    //console.log("fPickCrewMember - dctFilledEmployees:", dctFilledEmployees);
+    //console.log("fPickCrewMember - appUser", appUser);
+    
+    // let lstNonAvailableEmployees = fGetNonAvailableEmployeesForShift(sCurrentShiftId, dctFilledEmployees);
+
+    // const lstAvailableEmployees = 
+    //     fFilterFilledEmployees([...appHtml.optEmployees], dctFilledEmployees);
+
+    //console.log("fPickCrewMember - lstAvailableEmployees:", lstAvailableEmployees);
 
     appFormValues.shiftsPlanner[sActiveMonth][sId] = 
-        await fPickSelection(element, "Pracovníci na směne", lstAvailableEmployees, 
+        await fPickSelection(element, "Pracovníci na směně", appHtml.optEmployees, 
             appFormValues.shiftsPlanner[sActiveMonth][sId], 1);
     //console.log("Vybraná pracoviště:", appFormValues.userProfile.spots);
 }
 window.fPickCrewMember = fPickCrewMember;
 
-// gets all filled empolyees for given day (key starts by day_)
-function fGetFilledEmployeesForDay(sDateKey) {
-    const lstFilled = [];
-    const sActiveMonth = appFormValues.shiftsPlanner.activeMonth;
-    for (const [key, value] of Object.entries(appFormValues.shiftsPlanner[sActiveMonth] || {})) {
-        if (key.startsWith(sDateKey)) {
-            lstFilled.push(value);
+// gets all filled empolyees for given shift (key starts by shift_)
+function fGetFilledEmployeesForShift(sShiftKey, sDescr) {
+    const dctFilled = {};
+    const sMonth = sShiftKey.slice(0, 7);
+    // remove the month and underscore from the shift key to get the rest of the key
+    sShiftKey = sShiftKey.slice(8);
+    const dctShiftsPlanned = fGetDctValueByKey(appFormValues.shiftsPlanner, sMonth, {});
+    //console.log("fGetFilledEmployeesForShift - sShiftKey:", sShiftKey, "sDescr:", sDescr, "dctShiftsPlanned:", dctShiftsPlanned);
+    for (const [key, value] of Object.entries(dctShiftsPlanned)) {
+        if (key.startsWith(sShiftKey)) {
+            dctFilled[sShiftKey] = {};
+            dctFilled[sShiftKey][value] = 'filled in: ' + sDescr;
+            
         }
     }
-    return lstFilled;
+    return dctFilled;
+}
+
+function fEmplForShiftByRequestsmaz(sShiftKey, lstRequestCodes) {
+    const lstNonAvailable = [];
+    const sMonth = sShiftKey.slice(0, 7);
+    sShiftKey = sShiftKey.slice(8);
+    Object.entries(appFormValues.usersRequests[sMonth][sShiftKey] ?? {}).forEach(function([sEmplKey, sReqValue]) {
+        if (lstRequestCodes.includes(sReqValue)) {
+            lstNonAvailable.push({sEmplKey: sReqValue});
+        }
+    });
+    //console.log("fEmplForShiftByRequest - lstNonAvailable:", lstNonAvailable);
+    return lstNonAvailable;
 }
 
 // removes items from list where the value[0] is in lstFilled
-function fFilterFilledEmployees(lstEmployees, lstFilled) {
-    lstEmployees.forEach(emp => {
-        if (lstFilled.includes(emp[0])) {
-            lstEmployees.splice(lstEmployees.indexOf(emp), 1);
-        }
-    });
-    return lstEmployees;
+function fFilterFilledEmployees(lstSource,lstRemove) {
+
+    const setRemove = new Set(
+        lstRemove.map(row => row[0])   // code
+    );
+    //console.log("fFilterFilledEmployees - setRemove:", setRemove);
+    return lstSource.filter(
+        row => !setRemove.has(row[0])
+    );
 }

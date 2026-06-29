@@ -21,6 +21,25 @@ import "./usersList.js";
 
 let dctPages = {};
 
+const lstRequestOptionsDay = [
+    ["", "Bez požadavku"],
+    ["wnt", "chci", "btn btn-green-lighter w-100 mb-1 shift-font", "btn btn-green-darker w-100 mb-1 shift-font", 100],
+    ["cnt", "nemohu", "btn btn-red-lighter w-100 mb-1 shift-font", "btn btn-red-darker w-100 mb-1 shift-font", -100],
+    ["hld", "dovol", "btn btn-yellow-lighter w-100 mb-1 shift-font", "btn btn-yellow-darker w-100 mb-1 shift-font", -1000],
+    ["sck", "nem/očr", "btn btn-blue2-lighter w-100 mb-1 shift-font", "btn btn-blue2-darker w-100 mb-1 shift-font", -1000],
+  ];
+window.lstRequestOptionsDay = lstRequestOptionsDay;
+
+const lstRequestOptionsNight = [
+    ["", "Bez požadavku"],
+    ["wnt", "N:chci", "btn btn-green-lighter w-100 mb-1 shift-font", "btn btn-green-darker w-100 mb-1 shift-font", 100],
+    ["cnt", "N:nemohu", "btn btn-red-lighter w-100 mb-1 shift-font", "btn btn-red-darker w-100 mb-1 shift-font", -100],
+];
+window.lstRequestOptionsNight = lstRequestOptionsNight;
+
+appHtml.optRequests = lstRequestOptionsDay;
+
+
 
 async function fStartApplication() {
         
@@ -854,6 +873,22 @@ function fGetEng3Weekday(date) {
 window.fGetEng3Weekday = fGetEng3Weekday;
 
 
+function fMoveDate(sDate, iDayDiff) {
+
+    const dt = new Date(sDate);
+
+    dt.setDate(dt.getDate() + iDayDiff);
+
+    return (
+        dt.getFullYear()
+        + "-"
+        + String(dt.getMonth() + 1).padStart(2, "0")
+        + "-"
+        + String(dt.getDate()).padStart(2, "0")
+    );
+}
+window.fMoveDate = fMoveDate;
+
 function fEscapeHtml(value) {
 
     return String(value ?? "")
@@ -864,3 +899,15 @@ function fEscapeHtml(value) {
         .replaceAll("'", "&#039;");
 }
 window.fEscapeHtml = fEscapeHtml;
+
+function fLstToDct(lst, sKeyCol = 0, lstKeys) {
+    let dct = {}
+    lst.forEach(function(row) {
+        dct[row[sKeyCol]] = {};
+        lstKeys.forEach(function(k, i) {
+            dct[row[sKeyCol]][k] = row[i];
+        });
+    });
+    return dct;
+}
+window.fLstToDct = fLstToDct;
